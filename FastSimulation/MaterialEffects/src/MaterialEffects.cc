@@ -291,7 +291,7 @@ void MaterialEffects::interact(FSimEvent& mySimEvent,
     // Simulate a nuclear interaction
     double factor = 1.0;
     if(use_hardcoded){
-      if (layer.layerNumber() >= 19 && layer.layerNumber() <= 27 ) 
+      if (layer.layerNumber() >= 21 && layer.layerNumber() <= 29 ) 
 	factor = theTECFudgeFactor;
     }
     NuclearInteraction->updateState(myTrack, radlen*factor, random);
