@@ -7,8 +7,8 @@ TrackerMaterialBlock = cms.PSet(
     use_hardcoded_geometry = cms.bool(True),
 
     disk_thickness = cms.vdouble(0.058,0.058,0.058,0.04,0.04,0.055,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05),
-    disk_inner_radius = cms.vdouble(5.82585,5.82585,5.82585,22.7005,22.7005,22.7005,23.3726,23.3726,23.3726,32.1214,32.1214,32.1214,39.2102,39.2102,50.4201),
-    disk_outer_radius = cms.vdouble(14.5978,14.5978,14.5978,50.4389,50.4389,50.4389,109.521,109.521,109.521,109.521,109.521,109.521,109.521,109.521,109.521),
+    disk_inner_radius = cms.vdouble(4.5,4.5,4.5,22.7005,22.7005,22.7005,23.3726,23.3726,23.3726,32.1214,32.1214,32.1214,39.2102,39.2102,50.4201),
+    disk_outer_radius = cms.vdouble(16.1,16.1,16.1,50.4389,50.4389,50.4389,109.521,109.521,109.521,109.521,109.521,109.521,109.521,109.521,109.521),
     disk_z = cms.vdouble(29.1,39.6,51.6,79.2,92.15,105.1,131.892,145.892,159.892,173.892,187.892,205.392,224.379,244.879,266.379),
 
     barrel_thickness = cms.vdouble(0.0217,0.0217,0.0217,0.0217,0.053,0.053,0.035,0.04,0.03,0.03,0.022,0.022,0.022,0.022),
@@ -92,10 +92,10 @@ TrackerMaterialBlock = cms.PSet(
     PXBOutCables2OuterRadius = cms.vdouble(16.5, 16.5, 16.5, 16.5, 16.5),
     PXBOutCables2ZPosition = cms.vdouble(28.0, 28.8, 28.8, 28.8, 28.8),
     # Pixel Outside walls and cables (barrel and endcap)
-    PixelOutCablesRadius = cms.vdouble(17.1, 17.5, 17.5, 17.5, 17.5), 
+    PixelOutCablesRadius = cms.vdouble(17.1, 17.5, 17.5, 17.5, 18.5),#17.5 
     PixelOutCablesLength = cms.vdouble(64.8, 72.0, 72.0, 65.0, 65.0),
     PixelOutCablesInnerRadius = cms.vdouble(3.0, 3.0, 7.197, 7.2, 6.5),
-    PixelOutCablesOuterRadius = cms.vdouble(17.3, 17.61, 17.61, 17.61, 17.61),
+    PixelOutCablesOuterRadius = cms.vdouble(17.3, 17.61, 17.61, 17.61, 19),#17.61
     PixelOutCablesZPosition = cms.vdouble(64.9, 72.1, 72.1, 65.1, 65.1),
     # Tracker Inner Barrel Outside Cables and walls (endcap)
     TIBOutCables1InnerRadius = cms.vdouble(22.5, 22.5, 22.5, 22.5, 22.5),
