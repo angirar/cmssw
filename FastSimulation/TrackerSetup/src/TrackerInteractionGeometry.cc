@@ -969,10 +969,10 @@ TrackerInteractionGeometry::TrackerInteractionGeometry(const edm::ParameterSet& 
     layerNr = TrackerInteractionGeometry::TEC+8;
     theDisk = new BoundDisk(PTEC8,theRotation2,TEC8);
     theDisk->setMediumProperties(*_theMPEndcap);
-    if ( theDisk->mediumProperties().radLen() > 0. ) 
+    if ( theDisk->mediumProperties().radLen() > 0. )
       _theCylinders.push_back(TrackerLayer(theDisk,layerNr,
 					   minDim(layerNr),maxDim(layerNr),
-					   fudgeFactors(layerNr)));
+					   fudgeFactors(layerNr))); 
     else
       delete theDisk;
     
@@ -1023,19 +1023,21 @@ TrackerInteractionGeometry::TrackerInteractionGeometry(const edm::ParameterSet& 
   
   //__________________________new block__________________________________
   std::cout<<"Detector geometry"<<std::endl;
-  double z, r;
+  double z=0, r=0, r_inn;
   unsigned n_Cyl=0;
   std::list<TrackerLayer>::const_iterator cyl_iterOut=cylinderBegin();
   while ( cyl_iterOut != cylinderEnd() ){
     if ( cyl_iterOut->forward() ) {
       z = cyl_iterOut->disk()->position().z();
       r = cyl_iterOut->disk()->outerRadius();
+      r_inn = cyl_iterOut->disk()->innerRadius();
     }
     else {
       z = cyl_iterOut->cylinder()->bounds().length()/2.;
       r = cyl_iterOut->cylinder()->bounds().width()/2.;
+      r_inn=0;
     }
-    std::cout<<"Disk?"<<cyl_iterOut->forward()<<"\tCylinder no="<<n_Cyl<<"\tLayer no="<<cyl_iterOut->layerNumber()<<"\tZ_pos="<<z<<"\tRadius="<<r<<std::endl;
+    std::cout<<"Disk?"<<cyl_iterOut->forward()<<"\tCylinder no="<<n_Cyl<<"\tLayer no="<<cyl_iterOut->layerNumber()<<"\tZ_pos="<<z<<"\tOuter_radius="<<r<<"\tInner_radius="<<r_inn<<std::endl;
     n_Cyl++;
     cyl_iterOut++;
   }

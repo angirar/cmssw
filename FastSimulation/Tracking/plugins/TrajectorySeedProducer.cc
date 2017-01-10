@@ -196,11 +196,13 @@ void TrajectorySeedProducer::produce(edm::Event& e, const edm::EventSetup& es)
 
         // create a list of hits cleaned from masked hits
         std::vector<const FastTrackerRecHit * > seedHitCandidates;
-        for (const auto & _hit : recHitCombination )
-        {
-            if(hitMasks && fastTrackingUtilities::hitIsMasked(_hit.get(),*hitMasks))
+        for (const auto & _hit : recHitCombination ){
+
+	  //	  std::cout<<"Hit location:"<<_hit->localPosition()<<std::endl;
+	  
+	  if(hitMasks && fastTrackingUtilities::hitIsMasked(_hit.get(),*hitMasks))
             {
-                continue;
+	      continue;
             }
             seedHitCandidates.push_back(_hit.get());
         }

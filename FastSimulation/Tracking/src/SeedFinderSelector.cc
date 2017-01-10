@@ -70,8 +70,7 @@ bool SeedFinderSelector::pass(const std::vector<const FastTrackerRecHit *>& hits
     {
 	throw cms::Exception("FastSimTracking") << "ERROR: trackingRegion not set";
     }
-
-
+    
     // check the inner 2 hits
     if(hits.size() < 2)
     {

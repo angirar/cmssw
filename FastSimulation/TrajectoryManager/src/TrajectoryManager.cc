@@ -146,6 +146,7 @@ TrajectoryManager::reconstruct(const TrackerTopology *tTopo, RandomEngineAndDist
 
   // Clear the hits of the previous event
   //  thePSimHits->clear();
+  std::cout<<"Entered reconstruct"<<std::endl;
   thePSimHits.clear();
 
   // The new event
@@ -369,7 +370,7 @@ TrajectoryManager::reconstruct(const TrackerTopology *tTopo, RandomEngineAndDist
 
   // Save the information from Nuclear Interaction Generation
   if ( theMaterialEffects ) theMaterialEffects->save();
-
+  std::cout<<"Exiting createPSimHits"<<std::endl;
 }
 
 void 
@@ -556,6 +557,7 @@ TrajectoryManager::createPSimHits(const TrackerLayer& layer,
 
   //  const MagneticField& mf = MagneticFieldMap::instance()->magneticField();
   // This solution is actually much faster !
+  std::cout<<"Entered createPSimHits"<<std::endl;
   LocalMagneticField mf(PP.getMagneticField());
   AnalyticalPropagator alongProp(&mf, anyDirection);
   InsideBoundsMeasurementEstimator est;
@@ -583,7 +585,7 @@ TrajectoryManager::createPSimHits(const TrackerLayer& layer,
     // Disgusting fudge factor ! 
     makePSimHits( i->first, i->second, theHitMap, trackID, eloss, thickness, partID,tTopo);
   }
-
+  std::cout<<"Exiting createPSimHits"<<std::endl;
 }
 
 TrajectoryStateOnSurface 
@@ -591,9 +593,17 @@ TrajectoryManager::makeTrajectoryState( const DetLayer* layer,
 					const ParticlePropagator& pp,
 					const MagneticField* field) const
 {
+  std::cout<<"Entered makeTrajectoryState"<<std::endl;
+  std::cout<<"Pointer to DetLayer:"<<layer<<std::endl;
   GlobalPoint  pos( pp.X(), pp.Y(), pp.Z());
+  double r2=0;
+  r2=(pp.X()*pp.X())+(pp.Y()*pp.Y());
+  std::cout<<"Global point position:x="<<pp.X()<<",y="<<pp.Y()<<",R_xy="<<std::sqrt(r2)<<",z="<<pp.Z()<<std::endl;
   GlobalVector mom( pp.Px(), pp.Py(), pp.Pz());
+  std::cout<<"Global point momentum:Px="<<pp.Px()<<",Py="<<pp.Py()<<",Pz="<<pp.Pz()<<std::endl;
   auto plane = layer->surface().tangentPlane(pos);
+  std::cout<<"Pointer to the tangent plane:"<<plane<<std::endl;
+  std::cout<<"Exiting makeTrajectoryState"<<std::endl;
   return TrajectoryStateOnSurface
     (GlobalTrajectoryParameters( pos, mom, TrackCharge( pp.charge()), field), *plane);
 }
