@@ -5,22 +5,22 @@ from RecoTracker.FinalTrackSelectors.trackAlgoPriorityOrder_cfi import trackAlgo
 import RecoTracker.FinalTrackSelectors.trackListMerger_cfi
 earlyGeneralTracks =  TrackCollectionMerger.clone()
 earlyGeneralTracks.trackProducers = ['initialStepTracks',
-                                     'jetCoreRegionalStepTracks',
-                                     'lowPtTripletStepTracks',
-                                     'pixelPairStepTracks',
-                                     'detachedTripletStepTracks',
-                                     'mixedTripletStepTracks',
-                                     'pixelLessStepTracks',
-                                     'tobTecStepTracks'
+                                     'jetCoreRegionalStepTracks'
+#                                     'lowPtTripletStepTracks',
+ #                                    'pixelPairStepTracks',
+  #                                   'detachedTripletStepTracks',
+  #                                 'mixedTripletStepTracks',
+   #                                 'pixelLessStepTracks',
+    #                                 'tobTecStepTracks'
                                      ]
 earlyGeneralTracks.inputClassifiers =["initialStep",
-                                      "jetCoreRegionalStep",
-                                      "lowPtTripletStep",
-                                      "pixelPairStep",
-                                      "detachedTripletStep",
-                                      "mixedTripletStep",
-                                      "pixelLessStep",
-                                      "tobTecStep"
+                                      "jetCoreRegionalStep"
+#                                      "lowPtTripletStep",
+ #                                    "pixelPairStep",
+  #                                    "detachedTripletStep",
+  #                                  "mixedTripletStep",
+    #                                  "pixelLessStep",
+   #                                   "tobTecStep"
                                       ]
 from Configuration.Eras.Modifier_trackingLowPU_cff import trackingLowPU
 trackingLowPU.toModify(earlyGeneralTracks,
