@@ -48,27 +48,27 @@ from Configuration.Eras.Modifier_trackingPhase1QuadProp_cff import trackingPhase
 _forPhase1 = dict(
     trackProducers = [
         'initialStepTracks',
-        'highPtTripletStepTracks',
-        'jetCoreRegionalStepTracks',
-        'lowPtQuadStepTracks',
-        'lowPtTripletStepTracks',
-        'detachedQuadStepTracks',
-        'detachedTripletStepTracks',
-        'mixedTripletStepTracks',
-        'pixelLessStepTracks',
-        'tobTecStepTracks'
+#        'highPtTripletStepTracks',
+        'jetCoreRegionalStepTracks'
+#        'lowPtQuadStepTracks',
+ #       'lowPtTripletStepTracks',
+  #      'detachedQuadStepTracks',
+  #      'detachedTripletStepTracks',
+   #     'mixedTripletStepTracks',
+    #    'pixelLessStepTracks',
+     #   'tobTecStepTracks'
     ],
     inputClassifiers = [
         "initialStep",
-        "highPtTripletStep",
-        "jetCoreRegionalStep",
-        "lowPtQuadStep",
-        "lowPtTripletStep",
-        "detachedQuadStep",
-        "detachedTripletStep",
-        "mixedTripletStep",
-        "pixelLessStep",
-        "tobTecStep"
+      #  "highPtTripletStep",
+        "jetCoreRegionalStep"
+#        "lowPtQuadStep",
+ #       "lowPtTripletStep",
+  #      "detachedQuadStep",
+   #     "detachedTripletStep",
+    #    "mixedTripletStep",
+     #   "pixelLessStep",
+      #  "tobTecStep"
     ],
 )
 trackingPhase1.toModify(earlyGeneralTracks, **_forPhase1)
