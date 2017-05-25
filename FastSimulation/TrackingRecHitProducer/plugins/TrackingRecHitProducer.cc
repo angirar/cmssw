@@ -33,10 +33,18 @@
 #include "DataFormats/TrackerRecHit2D/interface/FastSingleTrackerRecHit.h"
 #include "DataFormats/TrackerRecHit2D/interface/FastTrackerRecHitCollection.h"
 
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
+#include "FWCore/Framework/interface/MakerMacros.h"
+
 #include <map>
 #include <memory>
 #include <vector>
-
+#include <TFile.h>
+#include <TROOT.h>
+#include <TH2.h>
+#include <iostream>
+#include <fstream>
 class TrackingRecHitProducer:
     public edm::stream::EDProducer<>
 {
@@ -46,7 +54,9 @@ class TrackingRecHitProducer:
         edm::IOVSyncValue _iovSyncValue;
         std::map<unsigned int, TrackingRecHitPipe> _detIdPipes;
         void setupDetIdPipes(const edm::EventSetup& eventSetup);
-
+  TH2F* hitsRZfull;
+  TH2F* hitsRZ;
+  TH2F* hitsxy;
     public:
         TrackingRecHitProducer(const edm::ParameterSet& config);
 
@@ -64,8 +74,19 @@ class TrackingRecHitProducer:
 
 TrackingRecHitProducer::TrackingRecHitProducer(const edm::ParameterSet& config)
 {
-    edm::ConsumesCollector consumeCollector = consumesCollector();
-    const std::vector<edm::ParameterSet>& pluginConfigs = config.getParameter<std::vector<edm::ParameterSet>>("plugins");
+  edm::Service<TFileService> fs;
+  hitsRZfull = fs->make<TH2F>("producerrechitsZPerpfull","",1280,-320,320,1040,-130,130);
+  hitsRZfull->GetXaxis()->SetTitle("Z [cm]");
+  hitsRZfull->GetYaxis()->SetTitle("R [cm]");
+  hitsRZ = fs->make<TH2F>("producerrechitsZPerp","",600,-60,60,600,-60,60);
+  hitsRZ->GetXaxis()->SetTitle("Z [cm]");
+  hitsRZ->GetYaxis()->SetTitle("R [cm]");
+  hitsxy = fs->make<TH2F>("producerrechitsXY","",1500,-250,250,750,-130,130);
+  hitsxy->GetXaxis()->SetTitle("X [cm]");
+  hitsxy->GetYaxis()->SetTitle("Y [cm]");  
+  
+  edm::ConsumesCollector consumeCollector = consumesCollector();
+  const std::vector<edm::ParameterSet>& pluginConfigs = config.getParameter<std::vector<edm::ParameterSet>>("plugins");
 
     for (unsigned int iplugin = 0; iplugin<pluginConfigs.size(); ++iplugin)
     {
@@ -232,7 +253,28 @@ void TrackingRecHitProducer::produce(edm::Event& event, const edm::EventSetup& e
     // all rechits need a unique id numbers
     for(unsigned recHitIndex = 0; recHitIndex < output_recHits->size(); ++recHitIndex)
     {
-	    ((FastSingleTrackerRecHit*)&(*output_recHits)[recHitIndex])->setId(recHitIndex);
+      //      (FastSingleTrackerRecHit*) & rhit = (*output_recHits)[recHitIndex];
+      double x = ((FastSingleTrackerRecHit*)&(*output_recHits)[recHitIndex])->globalPosition().x();
+      double y = ((FastSingleTrackerRecHit*)&(*output_recHits)[recHitIndex])->globalPosition().y();
+      double z = ((FastSingleTrackerRecHit*)&(*output_recHits)[recHitIndex])->globalPosition().z();
+      double phi_val = ((FastSingleTrackerRecHit*)&(*output_recHits)[recHitIndex])->globalPosition().phi();
+      double r = std::sqrt(x*x+y*y);
+      unsigned subdet = DetId(((FastSingleTrackerRecHit*)&(*output_recHits)[recHitIndex])->geographicalId()).subdetId();
+      //std::cout<<"subdet="<<subdet<<std::endl;                                                                                           
+
+      if(phi_val<0){
+	hitsRZfull->Fill(z,-r);
+	if( subdet == 1 || subdet == 2)
+	  hitsRZ->Fill(z,-r);
+      }
+      else{
+	hitsRZfull->Fill(z,r);
+        if( subdet == 1 || subdet == 2)
+	  hitsRZ->Fill(z,r);
+      }
+      hitsxy->Fill(x,y);
+       
+      ((FastSingleTrackerRecHit*)&(*output_recHits)[recHitIndex])->setId(recHitIndex);
     }
 
     event.put(std::move(output_recHits));

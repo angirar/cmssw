@@ -1,5 +1,5 @@
 import FWCore.ParameterSet.Config as cms
-#from Configuration.Eras.Modifier_trackingPhase1_cff import trackingPhase1
+from Configuration.Eras.Modifier_trackingPhase1_cff import trackingPhase1
 #from RecoPixelVertexing.PixelTriplets.caHitQuadrupletEDProducer_cfi import caHitQuadrupletEDProducer as _caHitQuadrupletEDProducer
 # import the full tracking equivalent of this file
 import RecoTracker.IterativeTracking.InitialStep_cff as _standard
@@ -56,17 +56,17 @@ print "firstStepprimaryverticescollection:",firstStepPrimaryVerticesBeforeMixing
 initialStepClassifier1 = _standard.initialStepClassifier1.clone()
 initialStepClassifier1.vertices = "firstStepPrimaryVerticesBeforeMixing"
 print "initialStepClassifier1 vertices:", initialStepClassifier1.vertices
-initialStepClassifier2 = _standard.initialStepClassifier2.clone()
-initialStepClassifier2.vertices = "firstStepPrimaryVerticesBeforeMixing"
-initialStepClassifier3 = _standard.initialStepClassifier3.clone()
-initialStepClassifier3.vertices = "firstStepPrimaryVerticesBeforeMixing"
+#initialStepClassifier2 = _standard.initialStepClassifier2.clone()
+#initialStepClassifier2.vertices = "firstStepPrimaryVerticesBeforeMixing"
+#initialStepClassifier3 = _standard.initialStepClassifier3.clone()
+#initialStepClassifier3.vertices = "firstStepPrimaryVerticesBeforeMixing"
 
 
 initialStep = _standard.initialStep.clone()
-#trackingPhase1.toReplaceWith(initialStep, initialStepClassifier1.clone(
- #       GBRForestLabel = 'MVASelectorInitialStep_Phase1',
-  #      qualityCuts = [-0.95,-0.85,-0.75],
-   #     ))
+trackingPhase1.toReplaceWith(initialStep, initialStepClassifier1.clone(
+        GBRForestLabel = 'MVASelectorInitialStep_Phase1',
+        qualityCuts = [-0.95,-0.85,-0.75],
+        ))
 
 # Final sequence
 InitialStep = cms.Sequence(initialStepTrackingRegions
@@ -74,7 +74,7 @@ InitialStep = cms.Sequence(initialStepTrackingRegions
                            +initialStepTrackCandidates
                            +initialStepTracks                                    
                            +firstStepPrimaryVerticesBeforeMixing
-                           +initialStepClassifier1*initialStepClassifier2*initialStepClassifier3
+        #                   +initialStepClassifier1*initialStepClassifier2*initialStepClassifier3
                            +initialStep
                            )
 

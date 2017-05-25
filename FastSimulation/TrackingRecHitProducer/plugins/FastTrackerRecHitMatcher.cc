@@ -1,6 +1,11 @@
 // system include files
 #include <memory>
-
+#include <TFile.h>
+#include <TROOT.h>
+#include <TH2.h>
+#include <TH1.h>
+#include <iostream>
+#include <fstream>
 // framework stuff
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/stream/EDProducer.h"
@@ -23,7 +28,8 @@
 #include "Geometry/CommonDetUnit/interface/GluedGeomDet.h"
 #include "DataFormats/SiStripDetId/interface/StripSubdetector.h"
 
-
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 // sim stuff
 #include "SimDataFormats/TrackingHit/interface/PSimHit.h"
@@ -40,6 +46,10 @@ class FastTrackerRecHitMatcher : public edm::stream::EDProducer<>  {
     private:
     
     virtual void produce(edm::Event&, const edm::EventSetup&) override;
+  TH2F* rechitsRZfull;
+  TH2F* rechitsRZ;
+  TH2F* rechitsxy;
+  TH1F* resol[4];
 
     // ---------- typedefs -----------------------------
     typedef std::pair<LocalPoint,LocalPoint>                   StripPosition; 
@@ -80,11 +90,30 @@ class FastTrackerRecHitMatcher : public edm::stream::EDProducer<>  {
 FastTrackerRecHitMatcher::FastTrackerRecHitMatcher(const edm::ParameterSet& iConfig)
 
 {
-    simHitsToken = consumes<edm::PSimHitContainer>(iConfig.getParameter<edm::InputTag>("simHits"));
-    simHit2RecHitMapToken = consumes<FastTrackerRecHitRefCollection>(iConfig.getParameter<edm::InputTag>("simHit2RecHitMap"));
+  edm::Service<TFileService> fs;
+  rechitsRZfull = fs->make<TH2F>("matcherrechitsZPerpfull","",1280,-320,320,1040,-130,130);
+  rechitsRZfull->GetXaxis()->SetTitle("Z [cm]");
+  rechitsRZfull->GetYaxis()->SetTitle("R [cm]");
+  rechitsRZ = fs->make<TH2F>("matcherrechitsZPerp","",600,-60,60,600,-60,60);
+  rechitsRZ->GetXaxis()->SetTitle("Z [cm]");
+  rechitsRZ->GetYaxis()->SetTitle("R [cm]");
+  rechitsxy = fs->make<TH2F>("matcherrechitsXY","",1500,-250,250,750,-130,130);
+  rechitsxy->GetXaxis()->SetTitle("X [cm]");
+  rechitsxy->GetYaxis()->SetTitle("Y [cm]");
+  resol[0] = fs->make<TH1F>("Xresol","Resolution plot b/w xpos of Simhit & Rechit",10000,-5,5);
+  resol[0]->GetXaxis()->SetTitle("centimeters");
+  resol[1] = fs->make<TH1F>("Yresol","Resolution plot b/w ypos of Simhit & Rechit",10000,-5,5);
+  resol[1]->GetXaxis()->SetTitle("centimeters");
+  resol[2] = fs->make<TH1F>("Zresol","Resolution plot b/w zpos of Simhit & Rechit",10000,-5,5);
+  resol[2]->GetXaxis()->SetTitle("centimeters");
+  resol[3] = fs->make<TH1F>("Rresol","Resolution plot b/w R of Simhit & Rechit",10000,-5,5);
+  resol[3]->GetXaxis()->SetTitle("centimeters");
+  
+  simHitsToken = consumes<edm::PSimHitContainer>(iConfig.getParameter<edm::InputTag>("simHits"));
+  simHit2RecHitMapToken = consumes<FastTrackerRecHitRefCollection>(iConfig.getParameter<edm::InputTag>("simHit2RecHitMap"));
     
-    produces<FastTrackerRecHitCollection>();
-    produces<FastTrackerRecHitRefCollection>("simHit2RecHitMap");
+  produces<FastTrackerRecHitCollection>();
+  produces<FastTrackerRecHitRefCollection>("simHit2RecHitMap");
 }
 
 
@@ -120,17 +149,55 @@ void FastTrackerRecHitMatcher::produce(edm::Event& iEvent, const edm::EventSetup
 	const PSimHit & simHit = (*simHits)[simHitCounter];
 	const FastTrackerRecHitRef & recHitRef = (*simHit2RecHitMap)[simHitCounter];
 
+	const LocalPoint& localPoint = simHit.localPosition();
+	//std::cout<<"Found localpos"<<std::endl;
+	const DetId& theDetId = simHit.detUnitId();
+	//std::cout<<"Found det ID"<<std::endl;
+	const GeomDet* theGeomDet = geometry->idToDet(theDetId);
+	//std::cout<<"Found pointer to Geom det from ID"<<std::endl;
+	const GlobalPoint& globalPoint = theGeomDet->toGlobal(localPoint);
+	
+	//simhit x,y,z
+	double simx = globalPoint.x();
+        double simy = globalPoint.y();
+        double simz = globalPoint.z();
+	double simr = globalPoint.mag();
 	// skip simHits w/o associated recHit 
 	if(recHitRef.isNull())
 	    continue;
 
 	// cast
 	const FastSingleTrackerRecHit * recHit = _cast2Single(recHitRef.get());
+	
+	double x = recHit->globalPosition().x();
+	double y = recHit->globalPosition().y();
+	double z = recHit->globalPosition().z();
+	double mag = recHit->globalPosition().mag();
+	//resolution plots
+	resol[0]->Fill(simx-x);
+	resol[1]->Fill(simy-y);
+	resol[2]->Fill(simz-z);
+	resol[3]->Fill(simr-mag);
 
+	double phi_val = recHit->globalPosition().phi();
+	double r = std::sqrt(x*x+y*y);
+	
 	// get subdetector id
 	DetId detid = recHit->geographicalId();
 	unsigned int subdet = detid.subdetId();
 	
+	if(phi_val<0){
+	  rechitsRZfull->Fill(z,-r);
+	  if( subdet == 1 || subdet == 2)
+	    rechitsRZ->Fill(z,-r);
+	}
+	else{
+	  rechitsRZfull->Fill(z,r);
+	  if( subdet == 1 || subdet == 2)
+	    rechitsRZ->Fill(z,r);
+	}
+	rechitsxy->Fill(x,y);
+
 	// treat pixel hits
 	if(subdet <= 2){ 
 	    (*output_simHit2RecHitMap)[simHitCounter] = recHitRef;
