@@ -6,6 +6,9 @@
 import FWCore.ParameterSet.Config as cms
 from TrackingTools.MaterialEffects.MaterialPropagatorParabolicMf_cff import *
 from FastSimulation.Tracking.InitialStep_cff import *
+#from FastSimulation.Tracking.DetachedQuadStep_cff import *
+#from FastSimulation.Tracking.HighPtTripletStep_cff import *
+#from FastSimulation.Tracking.LowPtQuadStep_cff import *
 from FastSimulation.Tracking.DetachedTripletStep_cff import *
 from FastSimulation.Tracking.LowPtTripletStep_cff import *
 from FastSimulation.Tracking.PixelPairStep_cff import *
@@ -24,6 +27,10 @@ generalTracksBeforeMixing = RecoTracker.FinalTrackSelectors.earlyGeneralTracks_c
 
 iterTracking = cms.Sequence(
     InitialStep
+ #   +LowPtQuadStep
+  #  +HighPtTripletStep
+   # +LowPtTripletStep
+   # +DetachedQuadStep   
     +DetachedTripletStep
     +LowPtTripletStep
     +PixelPairStep
@@ -31,5 +38,6 @@ iterTracking = cms.Sequence(
     +PixelLessStep
     +TobTecStep
     +JetCoreRegionalStep
-    +generalTracksBeforeMixing)
+    +generalTracksBeforeMixing
+)
 
