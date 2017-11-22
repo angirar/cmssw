@@ -99,15 +99,15 @@ from Configuration.Eras.Modifier_fastSim_cff import fastSim
 if fastSim.isChosen():
 #if True:
     obj = muonAssociatorByHitsCommonParameters
-    obj.simtracksTag = "famosSimHits"
+    obj.simtracksTag = "fastSimProducer"
     obj.DTsimhitsTag  = "MuonSimHits:MuonDTHits"
     obj.CSCsimHitsTag = "MuonSimHits:MuonCSCHits"
     obj.RPCsimhitsTag = "MuonSimHits:MuonRPCHits"
-    obj.simtracksXFTag = "mix:famosSimHits"
+    obj.simtracksXFTag = "mix:fastSimProducer"
     obj.DTsimhitsXFTag  = "mix:MuonSimHitsMuonDTHits"
     obj.CSCsimHitsXFTag = "mix:MuonSimHitsMuonCSCHits"
     obj.RPCsimhitsXFTag = "mix:MuonSimHitsMuonRPCHits"
-    obj.ROUList = ['famosSimHitsTrackerHits']
+    obj.ROUList = ['fastSimProducerTrackerHits']
 
   
 muonAssociatorByHits = cms.EDProducer("MuonAssociatorEDProducer",

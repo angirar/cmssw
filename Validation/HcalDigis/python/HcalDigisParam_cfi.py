@@ -18,7 +18,7 @@ hcaldigisAnalyzer = cms.EDAnalyzer("HcalDigisValidation",
 
 from Configuration.Eras.Modifier_fastSim_cff import fastSim
 if fastSim.isChosen():
-    hcaldigisAnalyzer.simHits = cms.untracked.InputTag("famosSimHits","HcalHits")
+    hcaldigisAnalyzer.simHits = cms.untracked.InputTag("fastSimProducer","HcalHits")
 
 from Configuration.Eras.Modifier_run2_HCAL_2017_cff import run2_HCAL_2017
 run2_HCAL_2017.toModify(hcaldigisAnalyzer,

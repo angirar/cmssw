@@ -56,7 +56,7 @@ if fastSim.isChosen():
         cms.InputTag("MuonSimHits","MuonCSCHits"), 
         cms.InputTag("MuonSimHits","MuonDTHits"), 
         cms.InputTag("MuonSimHits","MuonRPCHits"), 
-        cms.InputTag("famosSimHits","TrackerHits"))
+        cms.InputTag("fastSimProducer","TrackerHits"))
     mixSimHits.subdets = cms.vstring(
         'MuonCSCHits', 
         'MuonDTHits', 
@@ -91,10 +91,10 @@ mixCaloHits = cms.PSet(
 # fastsim customs
 if fastSim.isChosen():
     mixCaloHits.input = cms.VInputTag(
-        cms.InputTag("famosSimHits","EcalHitsEB"), 
-        cms.InputTag("famosSimHits","EcalHitsEE"), 
-        cms.InputTag("famosSimHits","EcalHitsES"), 
-        cms.InputTag("famosSimHits","HcalHits"))
+        cms.InputTag("fastSimProducer","EcalHitsEB"), 
+        cms.InputTag("fastSimProducer","EcalHitsEE"), 
+        cms.InputTag("fastSimProducer","EcalHitsES"), 
+        cms.InputTag("fastSimProducer","HcalHits"))
     mixCaloHits.subdets = cms.vstring(
         'EcalHitsEB', 
         'EcalHitsEE', 
@@ -115,8 +115,8 @@ mixSimVertices = cms.PSet(
 
 # fastsim customs
 if fastSim.isChosen():
-    mixSimTracks.input = cms.VInputTag(cms.InputTag("famosSimHits"))
-    mixSimVertices.input = cms.VInputTag(cms.InputTag("famosSimHits"))
+    mixSimTracks.input = cms.VInputTag(cms.InputTag("fastSimProducer"))
+    mixSimVertices.input = cms.VInputTag(cms.InputTag("fastSimProducer"))
     
 mixHepMCProducts = cms.PSet(
     makeCrossingFrame = cms.untracked.bool(True),
