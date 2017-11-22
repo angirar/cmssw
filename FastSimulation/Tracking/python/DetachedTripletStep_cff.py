@@ -18,7 +18,8 @@ detachedTripletStepSeeds = FastSimulation.Tracking.TrajectorySeedProducer_cfi.tr
     trackingRegions = "detachedTripletStepTrackingRegions",
     hitMasks = cms.InputTag("detachedTripletStepMasks")
 )
-detachedTripletStepSeeds.seedFinderSelector.pixelTripletGeneratorFactory = _hitSetProducerToFactoryPSet(_standard.detachedTripletStepHitTriplets)
+#detachedTripletStepSeeds.seedFinderSelector.pixelTripletGeneratorFactory = _hitSetProducerToFactoryPSet(_standard.detachedTripletStepHitTriplets)
+detachedTripletStepSeeds.seedFinderSelector.CAHitTripletGeneratorFactory = _hitSetProducerToFactoryPSet(_standard.detachedTripletStepHitTriplets)
 
 # track candidates
 import FastSimulation.Tracking.TrackCandidateProducer_cfi

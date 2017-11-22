@@ -13,8 +13,10 @@ initialStepSeeds = FastSimulation.Tracking.TrajectorySeedProducer_cfi.trajectory
     layerList = _standard.initialStepSeedLayers.layerList.value(),
     trackingRegions = "initialStepTrackingRegions"
 )
-initialStepSeeds.seedFinderSelector.pixelTripletGeneratorFactory = _hitSetProducerToFactoryPSet(_standard.initialStepHitTriplets)
-initialStepSeeds.seedFinderSelector.pixelTripletGeneratorFactory.SeedComparitorPSet.ComponentName = "none"
+#initialStepSeeds.seedFinderSelector.pixelTripletGeneratorFactory = _hitSetProducerToFactoryPSet(_standard.initialStepHitTriplets)
+#initialStepSeeds.seedFinderSelector.pixelTripletGeneratorFactory.SeedComparitorPSet.ComponentName = "none"
+initialStepSeeds.seedFinderSelector.CAHitQuadrupletGeneratorFactory = _hitSetProducerToFactoryPSet(_standard.initialStepHitQuadruplets)
+initialStepSeeds.seedFinderSelector.CAHitQuadrupletGeneratorFactory.SeedComparitorPSet.ComponentName = "none"
 
 # track candidates
 import FastSimulation.Tracking.TrackCandidateProducer_cfi
@@ -31,10 +33,10 @@ firstStepPrimaryVerticesBeforeMixing =  _standard.firstStepPrimaryVerticesUnsort
 # final selection
 initialStepClassifier1 = _standard.initialStepClassifier1.clone()
 initialStepClassifier1.vertices = "firstStepPrimaryVerticesBeforeMixing"
-initialStepClassifier2 = _standard.initialStepClassifier2.clone()
-initialStepClassifier2.vertices = "firstStepPrimaryVerticesBeforeMixing"
-initialStepClassifier3 = _standard.initialStepClassifier3.clone()
-initialStepClassifier3.vertices = "firstStepPrimaryVerticesBeforeMixing"
+#initialStepClassifier2 = _standard.initialStepClassifier2.clone()
+#initialStepClassifier2.vertices = "firstStepPrimaryVerticesBeforeMixing"
+#initialStepClassifier3 = _standard.initialStepClassifier3.clone()
+#initialStepClassifier3.vertices = "firstStepPrimaryVerticesBeforeMixing"
 
 
 initialStep = _standard.initialStep.clone()
@@ -45,7 +47,8 @@ InitialStep = cms.Sequence(initialStepTrackingRegions
                            +initialStepTrackCandidates
                            +initialStepTracks                                    
                            +firstStepPrimaryVerticesBeforeMixing
-                           +initialStepClassifier1*initialStepClassifier2*initialStepClassifier3
+                           +initialStepClassifier1
+                           #*initialStepClassifier2*initialStepClassifier3
                            +initialStep
                            )
 
