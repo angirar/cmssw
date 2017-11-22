@@ -46,7 +46,7 @@ class TrackingRecHitProducer:
         edm::IOVSyncValue _iovSyncValue;
         std::map<unsigned int, TrackingRecHitPipe> _detIdPipes;
         void setupDetIdPipes(const edm::EventSetup& eventSetup);
-
+ 
     public:
         TrackingRecHitProducer(const edm::ParameterSet& config);
 
@@ -64,8 +64,8 @@ class TrackingRecHitProducer:
 
 TrackingRecHitProducer::TrackingRecHitProducer(const edm::ParameterSet& config)
 {
-    edm::ConsumesCollector consumeCollector = consumesCollector();
-    const std::vector<edm::ParameterSet>& pluginConfigs = config.getParameter<std::vector<edm::ParameterSet>>("plugins");
+  edm::ConsumesCollector consumeCollector = consumesCollector();
+  const std::vector<edm::ParameterSet>& pluginConfigs = config.getParameter<std::vector<edm::ParameterSet>>("plugins");
 
     for (unsigned int iplugin = 0; iplugin<pluginConfigs.size(); ++iplugin)
     {
@@ -232,9 +232,9 @@ void TrackingRecHitProducer::produce(edm::Event& event, const edm::EventSetup& e
     // all rechits need a unique id numbers
     for(unsigned recHitIndex = 0; recHitIndex < output_recHits->size(); ++recHitIndex)
     {
-	    ((FastSingleTrackerRecHit*)&(*output_recHits)[recHitIndex])->setId(recHitIndex);
+      ((FastSingleTrackerRecHit*)&(*output_recHits)[recHitIndex])->setId(recHitIndex);
     }
-
+      
     event.put(std::move(output_recHits));
     event.put(std::move(output_recHitRefs),"simHit2RecHitMap");
 
