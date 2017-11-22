@@ -194,14 +194,24 @@ namespace {
   }
 }
 
-
 void CAHitQuadrupletGenerator::hitQuadruplets(const TrackingRegion& region,
 		OrderedHitSeeds & result, const edm::Event& ev,
 		const edm::EventSetup& es)
 {
+  std::cout<<"Entering the hitquadruplets()"<<std::endl;
 	edm::Handle<SeedingLayerSetsHits> hlayers;
+	std::cout<<"Handle collection for hlayers"<<std::endl;
 	ev.getByToken(theSeedingLayerToken, hlayers);
-	const SeedingLayerSetsHits& layers = *hlayers;
+	std::cout<<"Found hlayers"<<std::endl;
+	//	std::cout<<"hlayers size="<<std::endl;
+	// if(!hlayers)
+	//   std::cout<<"hlayers not set"<<std::endl;
+	// for(unsigned int i=0; i<hlayers->size(); i++){
+	//   SeedingLayerSetsHits::SeedingLayer& hl = hlayers->at(i);
+	//   std::cout<<"hlayer["<<i<<"]="<<hl.index()<<std::endl;
+	// }
+       	const SeedingLayerSetsHits& layers = *hlayers;
+	std::cout<<"Layers found"<<std::endl;
 	if (layers.numberOfLayersInSet() != 4)
 		throw cms::Exception("Configuration")
 				<< "CAHitQuadrupletsGenerator expects SeedingLayerSetsHits::numberOfLayersInSet() to be 4, got "
@@ -213,8 +223,9 @@ void CAHitQuadrupletGenerator::hitQuadruplets(const TrackingRegion& region,
 
 
 	HitPairGeneratorFromLayerPair thePairGenerator(0, 1, &theLayerCache);
-	
+	std::cout<<"Pair generator"<<std::endl;
 	createGraphStructure(layers, g);
+	std::cout<<"Graph structure created"<<std::endl;
         fillGraph(layers, g, hitDoublets,
                   [&](const SeedingLayerSetsHits::SeedingLayer& inner,
                       const SeedingLayerSetsHits::SeedingLayer& outer,
@@ -222,10 +233,10 @@ void CAHitQuadrupletGenerator::hitQuadruplets(const TrackingRegion& region,
             hitDoublets.emplace_back(thePairGenerator.doublets(region, ev, es, inner, outer));
             return true;
           });
-
+	std::cout<<"Doublets done"<<std::endl;
 	if (theComparitor)
 		theComparitor->init(ev, es);
-
+	//	std::cout<<"Comparitor value="<<theComparitor<<std::endl;
         std::vector<const HitDoublets *> hitDoubletsPtr;
         hitDoubletsPtr.reserve(hitDoublets.size());
         for(const auto& e: hitDoublets)
@@ -233,6 +244,7 @@ void CAHitQuadrupletGenerator::hitQuadruplets(const TrackingRegion& region,
 
         hitQuadruplets(region, result, hitDoubletsPtr, g, es);
         theLayerCache.clear();
+	std::cout<<"Exiting the hitquadruplets()"<<std::endl;
 }
 void CAHitQuadrupletGenerator::hitNtuplets(const IntermediateHitDoublets& regionDoublets,
                                               std::vector<OrderedHitSeeds>& result,
@@ -435,6 +447,7 @@ void CAHitQuadrupletGenerator::hitQuadruplets(const TrackingRegion& region,
                                               OrderedHitSeeds & result,
                                               std::vector<const HitDoublets *>& hitDoublets, const CAGraph& g,
                                               const edm::EventSetup& es) {
+  std::cout<<"Entered next quad()"<<std::endl;
 	//Retrieve tracker topology from geometry
 	edm::ESHandle<TrackerTopology> tTopoHand;
 	es.get<TrackerTopologyRcd>().get(tTopoHand);
@@ -600,7 +613,7 @@ void CAHitQuadrupletGenerator::hitQuadruplets(const TrackingRegion& region,
     }
      
   }
-
+  std::cout<<"Reached end"<<std::endl;
 }
 
 

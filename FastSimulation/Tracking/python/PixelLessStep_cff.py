@@ -1,4 +1,5 @@
 import FWCore.ParameterSet.Config as cms
+from Configuration.Eras.Modifier_trackingPhase1_cff import trackingPhase1
 
 # import the full tracking equivalent of this file
 import RecoTracker.IterativeTracking.PixelLessStep_cff as _standard
@@ -18,6 +19,7 @@ pixelLessStepSeeds = FastSimulation.Tracking.TrajectorySeedProducer_cfi.trajecto
     trackingRegions = "pixelLessStepTrackingRegions",
     hitMasks = cms.InputTag("pixelLessStepMasks"),
 )
+
 pixelLessStepSeeds.seedFinderSelector.MultiHitGeneratorFactory = _hitSetProducerToFactoryPSet(_standard.pixelLessStepHitTriplets)
 pixelLessStepSeeds.seedFinderSelector.MultiHitGeneratorFactory.refitHits = False
 
@@ -25,7 +27,7 @@ pixelLessStepSeeds.seedFinderSelector.MultiHitGeneratorFactory.refitHits = False
 import FastSimulation.Tracking.TrackCandidateProducer_cfi
 pixelLessStepTrackCandidates = FastSimulation.Tracking.TrackCandidateProducer_cfi.trackCandidateProducer.clone(
     src = cms.InputTag("pixelLessStepSeeds"),
-    MinNumberOfCrossedLayers = 6, # ?
+    MinNumberOfCrossedLayers = 6, #4 in fullsim ?
     hitMasks = cms.InputTag("pixelLessStepMasks"),
 )
 
@@ -38,6 +40,10 @@ pixelLessStepClassifier1.vertices = "firstStepPrimaryVerticesBeforeMixing"
 pixelLessStepClassifier2 = _standard.pixelLessStepClassifier2.clone()
 pixelLessStepClassifier2.vertices = "firstStepPrimaryVerticesBeforeMixing"
 pixelLessStep = _standard.pixelLessStep.clone()
+trackingPhase1.toReplaceWith(pixelLessStep, pixelLessStepClassifier1.clone(
+        GBRForestLabel = 'MVASelectorPixelLessStep_Phase1',
+        qualityCuts = [-0.4,0.0,0.4],
+        ))
 
 # Final sequence 
 PixelLessStep = cms.Sequence(pixelLessStepMasks

@@ -1,4 +1,5 @@
 import FWCore.ParameterSet.Config as cms
+from Configuration.Eras.Modifier_trackingPhase1_cff import trackingPhase1
 
 # import the full tracking equivalent of this file
 import RecoTracker.IterativeTracking.TobTecStep_cff as _standard
@@ -18,6 +19,7 @@ tobTecStepSeedsTripl = FastSimulation.Tracking.TrajectorySeedProducer_cfi.trajec
     trackingRegions = "tobTecStepTrackingRegionsTripl",
     hitMasks = cms.InputTag("tobTecStepMasks"),
 )
+
 tobTecStepSeedsTripl.seedFinderSelector.MultiHitGeneratorFactory = _hitSetProducerToFactoryPSet(_standard.tobTecStepHitTripletsTripl)
 tobTecStepSeedsTripl.seedFinderSelector.MultiHitGeneratorFactory.SeedComparitorPSet=cms.PSet(  ComponentName = cms.string( "none" ) )
 tobTecStepSeedsTripl.seedFinderSelector.MultiHitGeneratorFactory.refitHits = False
@@ -57,8 +59,10 @@ tobTecStepClassifier2 = _standard.tobTecStepClassifier2.clone()
 tobTecStepClassifier2.vertices = "firstStepPrimaryVerticesBeforeMixing"
 
 tobTecStep = _standard.tobTecStep.clone()
-
-
+trackingPhase1.toReplaceWith(tobTecStep, tobTecStepClassifier1.clone(
+        GBRForestLabel = 'MVASelectorTobTecStep_Phase1',
+        qualityCuts = [-0.6,-0.45,-0.3],
+        ))
 
 # Final sequence 
 TobTecStep = cms.Sequence(tobTecStepMasks
@@ -69,5 +73,6 @@ TobTecStep = cms.Sequence(tobTecStepMasks
                            +tobTecStepSeeds
                            +tobTecStepTrackCandidates
                            +tobTecStepTracks
-                          +tobTecStepClassifier1*tobTecStepClassifier2                           +tobTecStep
+                          +tobTecStepClassifier1*tobTecStepClassifier2  
+                          +tobTecStep
                        )

@@ -35,12 +35,14 @@ for _eraName, _postfix, _era in _cfg.allEras():
     locals()["_trackProducers"+_postfix] = _trackProd + _cfg.trackProducers(_postfix)
 
 _removeForFastSimSeedProducers =["initialStepSeedsPreSplitting",
+                                 "pixelPairStepSeeds",
                                  "jetCoreRegionalStepSeeds",
                                  "muonSeededSeedsInOut",
                                  "muonSeededSeedsOutIn"]
 _seedProducers_fastSim = [ x for x in _seedProducers if x not in _removeForFastSimSeedProducers]
 
 _removeForFastTrackProducers = ["initialStepTracksPreSplitting",
+                                "pixelPairStepTracks",
                                 "jetCoreRegionalStepTracks",
                                 "muonSeededTracksInOut",
                                 "muonSeededTracksOutIn"]

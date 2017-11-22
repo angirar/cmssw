@@ -32,6 +32,14 @@ DEFINE_EDM_PLUGIN(HitQuadrupletGeneratorFromTripletAndLayersFactory, PixelQuadru
 #include "CAHitQuadrupletGenerator.h"
 DEFINE_EDM_PLUGIN(OrderedHitsGeneratorFactory, CAHitQuadrupletGenerator, "CAHitQuadrupletGenerator");
 
+#include "RecoPixelVertexing/PixelTriplets/interface/HitQuadrupletGenerator.h"
+#include "RecoPixelVertexing/PixelTriplets/interface/HitTripletGenerator.h"
+#include "RecoPixelVertexing/PixelTriplets/interface/HitQuadrupletGeneratorFactory.h"
+#include "RecoPixelVertexing/PixelTriplets/interface/HitTripletGeneratorFactory.h"
+DEFINE_EDM_PLUGIN(HitQuadrupletGeneratorFactory, CAHitQuadrupletGenerator, "CAHitQuadrupletGenerator");
+DEFINE_EDM_PLUGIN(HitTripletGeneratorFactory, CAHitTripletGenerator, "CAHitTripletGenerator");
+
+
 #include "RecoPixelVertexing/PixelTriplets/interface/HitTripletEDProducerT.h"
 using PixelTripletHLTEDProducer = HitTripletEDProducerT<PixelTripletHLTGenerator>;
 DEFINE_FWK_MODULE(PixelTripletHLTEDProducer);

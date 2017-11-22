@@ -1377,6 +1377,7 @@ void TrackingNtuple::clearVariables() {
 // ------------ method called for each event  ------------
 void TrackingNtuple::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
+  std::cout<<"Entered Validation package"<<std::endl;
   using namespace edm;
   using namespace reco;
   using namespace std;
@@ -2728,29 +2729,30 @@ void TrackingNtuple::fillTrackingVertices(const TrackingVertexRefVector& trackin
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void TrackingNtuple::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+  std::cout<<"Entered the fill function in TrackingNtuple"<<std::endl;
   //The following says we do not know what parameters are allowed so do no validation
   // Please change this to state exactly what you do use, even if it is no parameters
   edm::ParameterSetDescription desc;
   desc.addUntracked<std::vector<edm::InputTag> >("seedTracks", std::vector<edm::InputTag>{
       edm::InputTag("seedTracksinitialStepSeeds"),
-      edm::InputTag("seedTracksdetachedTripletStepSeeds"),
-      edm::InputTag("seedTrackspixelPairStepSeeds"),
-      edm::InputTag("seedTrackslowPtTripletStepSeeds"),
-      edm::InputTag("seedTracksmixedTripletStepSeeds"),
-      edm::InputTag("seedTrackspixelLessStepSeeds"),
-      edm::InputTag("seedTrackstobTecStepSeeds"),
+	edm::InputTag("seedTracksdetachedTripletStepSeeds"),
+	edm::InputTag("seedTrackspixelPairStepSeeds"),
+	edm::InputTag("seedTrackslowPtTripletStepSeeds"),
+	edm::InputTag("seedTracksmixedTripletStepSeeds"),
+	edm::InputTag("seedTrackspixelLessStepSeeds"),
+	edm::InputTag("seedTrackstobTecStepSeeds"),
       edm::InputTag("seedTracksjetCoreRegionalStepSeeds"),
       edm::InputTag("seedTracksmuonSeededSeedsInOut"),
       edm::InputTag("seedTracksmuonSeededSeedsOutIn")
   });
   desc.addUntracked<std::vector<edm::InputTag> >("trackCandidates", std::vector<edm::InputTag>{
       edm::InputTag("initialStepTrackCandidates"),
-      edm::InputTag("detachedTripletStepTrackCandidates"),
-      edm::InputTag("pixelPairStepTrackCandidates"),
-      edm::InputTag("lowPtTripletStepTrackCandidates"),
-      edm::InputTag("mixedTripletStepTrackCandidates"),
-      edm::InputTag("pixelLessStepTrackCandidates"),
-      edm::InputTag("tobTecStepTrackCandidates"),
+	edm::InputTag("detachedTripletStepTrackCandidates"),
+	edm::InputTag("pixelPairStepTrackCandidates"),
+	edm::InputTag("lowPtTripletStepTrackCandidates"),
+	edm::InputTag("mixedTripletStepTrackCandidates"),
+	edm::InputTag("pixelLessStepTrackCandidates"),
+	edm::InputTag("tobTecStepTrackCandidates"),
       edm::InputTag("jetCoreRegionalStepTrackCandidates"),
       edm::InputTag("muonSeededTrackCandidatesInOut"),
       edm::InputTag("muonSeededTrackCandidatesOutIn")

@@ -16,7 +16,7 @@
 #include "RecoTracker/TkHitPairs/interface/LayerHitMapCache.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/EDGetToken.h"
-
+#include "RecoPixelVertexing/PixelTriplets/interface/IntermediateHitTriplets.h"
 #include "RecoTracker/TkHitPairs/interface/IntermediateHitDoublets.h"
 
 class TrackingRegion;
@@ -51,7 +51,7 @@ public:
 
     /// from base class
     virtual void hitQuadruplets(const TrackingRegion& reg, OrderedHitSeeds & quadruplets,
-            const edm::Event & ev, const edm::EventSetup& es);
+				const edm::Event & ev, const edm::EventSetup& es);
 
     // new-style
     void hitNtuplets(const IntermediateHitDoublets& regionDoublets,

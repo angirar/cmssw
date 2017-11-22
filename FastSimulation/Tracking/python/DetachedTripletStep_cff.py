@@ -1,4 +1,5 @@
 import FWCore.ParameterSet.Config as cms
+from Configuration.Eras.Modifier_trackingPhase1_cff import trackingPhase1
 
 # import the full tracking equivalent of this file
 import RecoTracker.IterativeTracking.DetachedTripletStep_cff as _standard
@@ -18,7 +19,11 @@ detachedTripletStepSeeds = FastSimulation.Tracking.TrajectorySeedProducer_cfi.tr
     trackingRegions = "detachedTripletStepTrackingRegions",
     hitMasks = cms.InputTag("detachedTripletStepMasks")
 )
-detachedTripletStepSeeds.seedFinderSelector.pixelTripletGeneratorFactory = _hitSetProducerToFactoryPSet(_standard.detachedTripletStepHitTriplets)
+ 
+detachedTripletStepSeeds.seedFinderSelector.CAHitTripletGeneratorFactory = _hitSetProducerToFactoryPSet(_standard.detachedTripletStepHitTriplets)
+detachedTripletStepSeeds.seedFinderSelector.CAHitTripletGeneratorFactory.SeedingLayers = cms.InputTag("seedingLayersEDProducer")
+detachedTripletStepSeeds.seedFinderSelector.CAHitTripletGeneratorFactory.SeedComparitorPSet.ComponentName = "none"
+#detachedTripletStepSeeds.seedFinderSelector.pixelTripletGeneratorFactory = _hitSetProducerToFactoryPSet(_standard.detachedTripletStepHitTriplets)
 
 # track candidates
 import FastSimulation.Tracking.TrackCandidateProducer_cfi
@@ -37,6 +42,10 @@ detachedTripletStepClassifier2 = _standard.detachedTripletStepClassifier2.clone(
 detachedTripletStepClassifier2.vertices = "firstStepPrimaryVerticesBeforeMixing"
 
 detachedTripletStep = _standard.detachedTripletStep.clone()
+trackingPhase1.toReplaceWith(detachedTripletStep, detachedTripletStepClassifier1.clone(
+        GBRForestLabel = 'MVASelectorDetachedTripletStep_Phase1',
+        qualityCuts = [-0.2,0.3,0.8],
+        ))
 
 # Final sequence 
 DetachedTripletStep = cms.Sequence(detachedTripletStepMasks

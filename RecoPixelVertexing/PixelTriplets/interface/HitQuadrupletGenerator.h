@@ -7,8 +7,9 @@
 
 #include "RecoTracker/TkTrackingRegions/interface/OrderedHitsGenerator.h"
 #include "RecoPixelVertexing/PixelTriplets/interface/OrderedHitSeeds.h"
-
+//#include "RecoPixelVertexing/PixelTriplets/interface/IntermediateHitTriplets.h"
 #include "FWCore/Utilities/interface/RunningAverage.h"
+//#include "FWCore/Utilities/interface/EDGetToken.h"
 
 class TrackingRegion;
 namespace edm { class Event; class EventSetup; }

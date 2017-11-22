@@ -18,8 +18,12 @@ lowPtTripletStepSeeds = FastSimulation.Tracking.TrajectorySeedProducer_cfi.traje
     trackingRegions = "lowPtTripletStepTrackingRegions",
     hitMasks = cms.InputTag("lowPtTripletStepMasks"),
 )
-lowPtTripletStepSeeds.seedFinderSelector.pixelTripletGeneratorFactory = _hitSetProducerToFactoryPSet(_standard.lowPtTripletStepHitTriplets)
-lowPtTripletStepSeeds.seedFinderSelector.pixelTripletGeneratorFactory.SeedComparitorPSet.ComponentName = "none"
+
+lowPtTripletStepSeeds.seedFinderSelector.CAHitTripletGeneratorFactory = _hitSetProducerToFactoryPSet(_standard.lowPtTripletStepHitTriplets)
+lowPtTripletStepSeeds.seedFinderSelector.CAHitTripletGeneratorFactory.SeedingLayers = cms.InputTag("seedingLayersEDProducer")
+#lowPtTripletStepSeeds.seedFinderSelector.pixelTripletGeneratorFactory = _hitSetProducerToFactoryPSet(_standard.lowPtTripletStepHitTriplets)
+#lowPtTripletStepSeeds.seedFinderSelector.pixelTripletGeneratorFactory.SeedComparitorPSet.ComponentName = "none"
+
 
 # track candidates
 import FastSimulation.Tracking.TrackCandidateProducer_cfi
@@ -36,7 +40,7 @@ lowPtTripletStepTracks = _standard.lowPtTripletStepTracks.clone(TTRHBuilder = 'W
 lowPtTripletStep = _standard.lowPtTripletStep.clone()
 lowPtTripletStep.vertices = "firstStepPrimaryVerticesBeforeMixing"
 
-# Final swquence 
+# Final sequence 
 LowPtTripletStep = cms.Sequence(lowPtTripletStepMasks
                                 +lowPtTripletStepTrackingRegions
                                 +lowPtTripletStepSeeds

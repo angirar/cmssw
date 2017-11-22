@@ -16,6 +16,8 @@
 <use   name="RecoTracker/TkHitPairs"/>
 <use   name="RecoPixelVertexing/PixelTriplets"/>
 <use   name="RecoTracker/MeasurementDet"/>
+<use   name="RecoTracker/TkTrackingRegions"/>
+<use   name="RecoTracker/TkSeedingLayers"/>
 <export>
   <lib   name="1"/>
 </export>

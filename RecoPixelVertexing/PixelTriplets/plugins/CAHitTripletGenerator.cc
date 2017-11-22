@@ -194,6 +194,7 @@ void CAHitTripletGenerator::hitTriplets(const TrackingRegion& region,
 		OrderedHitTriplets & result, const edm::Event& ev,
 		const edm::EventSetup& es)
 {
+  std::cout<<"Entering the hittriplets()"<<std::endl;
 	edm::Handle<SeedingLayerSetsHits> hlayers;
 	ev.getByToken(theSeedingLayerToken, hlayers);
 	const SeedingLayerSetsHits& layers = *hlayers;
@@ -226,6 +227,7 @@ void CAHitTripletGenerator::hitTriplets(const TrackingRegion& region,
 
         hitTriplets(region, result, hitDoubletsPtr, g, es);
         theLayerCache.clear();
+	std::cout<<"Exiting the hittriplets()"<<std::endl;
 }
 
 void CAHitTripletGenerator::hitNtuplets(const IntermediateHitDoublets& regionDoublets,

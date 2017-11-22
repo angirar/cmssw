@@ -49,7 +49,7 @@ public:
 
     /// from base class
     virtual void hitTriplets(const TrackingRegion& reg, OrderedHitTriplets & triplets,
-            const edm::Event & ev, const edm::EventSetup& es);
+            const edm::Event & ev, const edm::EventSetup& es) override;
 
     void hitNtuplets(const IntermediateHitDoublets& regionDoublets,
                      std::vector<OrderedHitSeeds>& result,

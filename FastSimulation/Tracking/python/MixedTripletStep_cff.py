@@ -1,4 +1,5 @@
 import FWCore.ParameterSet.Config as cms
+from Configuration.Eras.Modifier_trackingPhase1_cff import trackingPhase1
 
 # import the full tracking equivalent of this file
 import RecoTracker.IterativeTracking.MixedTripletStep_cff as _standard
@@ -7,7 +8,7 @@ from FastSimulation.Tracking.SeedingMigration import _hitSetProducerToFactoryPSe
 # fast tracking mask producer
 import FastSimulation.Tracking.FastTrackerRecHitMaskProducer_cfi
 mixedTripletStepMasks = FastSimulation.Tracking.FastTrackerRecHitMaskProducer_cfi.maskProducerFromClusterRemover(_standard.mixedTripletStepClusters)
-mixedTripletStepMasks.oldHitRemovalInfo = cms.InputTag("pixelPairStepMasks")
+mixedTripletStepMasks.oldHitRemovalInfo = cms.InputTag("detachedTripletStepMasks")
 
 # tracking regions
 mixedTripletStepTrackingRegionsA = _standard.mixedTripletStepTrackingRegionsA.clone()
@@ -19,6 +20,7 @@ mixedTripletStepSeedsA = FastSimulation.Tracking.TrajectorySeedProducer_cfi.traj
     trackingRegions = "mixedTripletStepTrackingRegionsA",
     hitMasks = cms.InputTag("mixedTripletStepMasks")
 )
+
 mixedTripletStepSeedsA.seedFinderSelector.pixelTripletGeneratorFactory = _hitSetProducerToFactoryPSet(_standard.mixedTripletStepHitTripletsA)
 
 
@@ -31,6 +33,7 @@ mixedTripletStepSeedsB = FastSimulation.Tracking.TrajectorySeedProducer_cfi.traj
     trackingRegions = "mixedTripletStepTrackingRegionsB",
     hitMasks = cms.InputTag("mixedTripletStepMasks")
 )
+
 mixedTripletStepSeedsB.seedFinderSelector.pixelTripletGeneratorFactory = _hitSetProducerToFactoryPSet(_standard.mixedTripletStepHitTripletsB)
 
 mixedTripletStepSeeds = _standard.mixedTripletStepSeeds.clone()
@@ -53,6 +56,10 @@ mixedTripletStepClassifier2 = _standard.mixedTripletStepClassifier2.clone()
 mixedTripletStepClassifier2.vertices = "firstStepPrimaryVerticesBeforeMixing"
 
 mixedTripletStep = _standard.mixedTripletStep.clone()
+trackingPhase1.toReplaceWith(mixedTripletStep, mixedTripletStepClassifier1.clone(
+        GBRForestLabel = 'MVASelectorMixedTripletStep_Phase1',
+        qualityCuts = [-0.5,0.0,0.5],
+        ))
 
 # Final sequence 
 MixedTripletStep =  cms.Sequence(mixedTripletStepMasks
