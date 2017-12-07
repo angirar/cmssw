@@ -99,10 +99,10 @@ namespace fastsim
     	std::unique_ptr<edm::PSimHitContainer> simHitContainer_;  //!< The SimHit.
         double minMomentum_;  //!< Set the minimal momentum of incoming particle
         bool doHitsFromInboundParticles_;  //!< If not set, incoming particles (negative speed relative to center of detector) don't create a SimHits since reconstruction anyways not possible
-      edm::Service<TFileService> FileService;
-      TH2F* simhitsRZfull;
-      TH2F* simhitsRZ;
-      TH2F* simhitsXY[2];
+      // edm::Service<TFileService> FileService;
+      // TH2F* simhitsRZfull;
+      // TH2F* simhitsRZ;
+      // TH2F* simhitsXY[2];
 
     };
 }
@@ -120,19 +120,19 @@ fastsim::TrackerSimHitProducer::TrackerSimHitProducer(const std::string & name,c
     // - particle with positive (negative) z and negative (positive) speed in z direction: no SimHits
     // -> this is not neccesary since a track reconstruction is not possible in this case anyways
     doHitsFromInboundParticles_ = cfg.getParameter<bool>("doHitsFromInboundParticles");
-    edm::Service<TFileService> fs;
-    simhitsRZfull = fs->make<TH2F>("simhitsRZfull","",1280,-320,320,1040,-130,130);
-    simhitsRZfull->GetXaxis()->SetTitle("Z [cm]");
-    simhitsRZfull->GetYaxis()->SetTitle("R [cm]");
-    simhitsRZ = fs->make<TH2F>("simhitsRZ","",600,-60,60,600,-60,60);
-    simhitsRZ->GetXaxis()->SetTitle("Z [cm]");
-    simhitsRZ->GetYaxis()->SetTitle("R [cm]");
-    simhitsXY[0] = fs->make<TH2F>("simhitsXY","",1500,-250,250,750,-130,130);
-    simhitsXY[0]->GetXaxis()->SetTitle("X [cm]");
-    simhitsXY[0]->GetYaxis()->SetTitle("Y [cm]");
-    simhitsXY[1] = fs->make<TH2F>("simhitsXYnew","",1500,-250,250,750,-130,130);
-    simhitsXY[1]->GetXaxis()->SetTitle("X [cm]");
-    simhitsXY[1]->GetYaxis()->SetTitle("Y [cm]");
+    // edm::Service<TFileService> fs;
+    // simhitsRZfull = fs->make<TH2F>("simhitsRZfull","",1280,-320,320,1040,-130,130);
+    // simhitsRZfull->GetXaxis()->SetTitle("Z [cm]");
+    // simhitsRZfull->GetYaxis()->SetTitle("R [cm]");
+    // simhitsRZ = fs->make<TH2F>("simhitsRZ","",600,-60,60,600,-60,60);
+    // simhitsRZ->GetXaxis()->SetTitle("Z [cm]");
+    // simhitsRZ->GetYaxis()->SetTitle("R [cm]");
+    // simhitsXY[0] = fs->make<TH2F>("simhitsXY","",1500,-250,250,750,-130,130);
+    // simhitsXY[0]->GetXaxis()->SetTitle("X [cm]");
+    // simhitsXY[0]->GetYaxis()->SetTitle("Y [cm]");
+    // simhitsXY[1] = fs->make<TH2F>("simhitsXYnew","",1500,-250,250,750,-130,130);
+    // simhitsXY[1]->GetXaxis()->SetTitle("X [cm]");
+    // simhitsXY[1]->GetYaxis()->SetTitle("Y [cm]");
 
 }
 
@@ -329,20 +329,20 @@ std::pair<double, PSimHit*> fastsim::TrackerSimHitProducer::createHitOnDetector(
 
     // Position of the hit in global coordinates
     GlobalPoint hitPos(detector.surface().toGlobal(localPosition));
-    double r = std::sqrt(hitPos.x()*hitPos.x()+hitPos.y()*hitPos.y());
-    if(hitPos.phi()<0 && hitPos.z()<0){
-      simhitsRZfull->Fill(hitPos.z(),-r);
-      if( subdet == 1 || subdet == 2)
-        simhitsRZ->Fill(hitPos.z(),-r);
-    }
-    else if(hitPos.phi()>0 && hitPos.z()<0){
-      simhitsRZfull->Fill(hitPos.z(),r);
-      if( subdet == 1 || subdet == 2)
-        simhitsRZ->Fill(hitPos.z(),r);
-    }
-    simhitsXY[0]->Fill(hitPos.x(),hitPos.y());
-    if(hitPos.x()<0 && subdet == 1)
-      simhitsXY[1]->Fill(hitPos.x(),hitPos.y());
+    // double r = std::sqrt(hitPos.x()*hitPos.x()+hitPos.y()*hitPos.y());
+    // if(hitPos.phi()<0 && hitPos.z()<0){
+    //   simhitsRZfull->Fill(hitPos.z(),-r);
+    //   if( subdet == 1 || subdet == 2)
+    //     simhitsRZ->Fill(hitPos.z(),-r);
+    // }
+    // else if(hitPos.phi()>0 && hitPos.z()<0){
+    //   simhitsRZfull->Fill(hitPos.z(),r);
+    //   if( subdet == 1 || subdet == 2)
+    //     simhitsRZ->Fill(hitPos.z(),r);
+    // }
+    // simhitsXY[0]->Fill(hitPos.x(),hitPos.y());
+    // if(hitPos.x()<0 && subdet == 1)
+    //   simhitsXY[1]->Fill(hitPos.x(),hitPos.y());
 
     return std::pair<double, PSimHit*>((hitPos-refPos).mag(),
                                         new PSimHit(entry, exit, localMomentum.mag(), tof, eLoss, pdgId,
