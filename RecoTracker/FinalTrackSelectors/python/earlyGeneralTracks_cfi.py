@@ -50,27 +50,27 @@ _forPhase1 = dict(
         'initialStepTracks',
         'highPtTripletStepTracks',
         'jetCoreRegionalStepTracks',
-        'lowPtQuadStepTracks',
-        'lowPtTripletStepTracks',
-        'detachedQuadStepTracks',
-        'detachedTripletStepTracks',
-        'pixelPairStepTracks',
-        'mixedTripletStepTracks',
-        'pixelLessStepTracks',
-        'tobTecStepTracks'
+        'lowPtQuadStepTracks'
+#        'lowPtTripletStepTracks',
+#        'detachedQuadStepTracks',
+#        'detachedTripletStepTracks',
+#        'pixelPairStepTracks',
+#        'mixedTripletStepTracks',
+#        'pixelLessStepTracks',
+#        'tobTecStepTracks'
     ],
     inputClassifiers = [
         "initialStep",
         "highPtTripletStep",
         "jetCoreRegionalStep",
-        "lowPtQuadStep",
-        "lowPtTripletStep",
-        "detachedQuadStep",
-        "detachedTripletStep",
-        "pixelPairStep",
-        "mixedTripletStep",
-        "pixelLessStep",
-        "tobTecStep"
+        "lowPtQuadStep"
+#        "lowPtTripletStep",
+#        "detachedQuadStep",
+#        "detachedTripletStep",
+#        "pixelPairStep",
+#        "mixedTripletStep",
+#        "pixelLessStep",
+#        "tobTecStep"
     ],
 )
 trackingPhase1.toModify(earlyGeneralTracks, **_forPhase1)

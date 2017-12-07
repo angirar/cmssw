@@ -95,6 +95,7 @@ _fastSim_detachedTripletStepSeeds = FastSimulation.Tracking.TrajectorySeedProduc
     hitMasks = cms.InputTag("detachedTripletStepMasks"),
     seedFinderSelector = dict( pixelTripletGeneratorFactory = _hitSetProducerToFactoryPSet(detachedTripletStepHitTriplets) )
 )
+trackingPhase1.toModify(_fastSim_detachedTripletStepSeeds,seedFinderSelector = dict( CAHitTripletGeneratorFactory = _hitSetProducerToFactoryPSet(detachedTripletStepHitTriplets)))
 fastSim.toReplaceWith(detachedTripletStepSeeds,_fastSim_detachedTripletStepSeeds)
 
 

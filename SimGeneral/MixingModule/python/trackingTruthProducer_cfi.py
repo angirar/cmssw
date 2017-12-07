@@ -46,10 +46,10 @@ if fastSim.isChosen():
         muon = cms.VInputTag( cms.InputTag('MuonSimHits','MuonDTHits'),
                               cms.InputTag('MuonSimHits','MuonCSCHits'),
                               cms.InputTag('MuonSimHits','MuonRPCHits') ),
-        trackerAndPixel = cms.VInputTag( cms.InputTag('famosSimHits','TrackerHits') )
+        trackerAndPixel = cms.VInputTag( cms.InputTag('fastSimProducer','TrackerHits') )
         )
-    trackingParticles.simTrackCollection = cms.InputTag('famosSimHits')
-    trackingParticles.simVertexCollection = cms.InputTag('famosSimHits')
+    trackingParticles.simTrackCollection = cms.InputTag('fastSimProducer')
+    trackingParticles.simVertexCollection = cms.InputTag('fastSimProducer')
 
 from Configuration.Eras.Modifier_run2_GEM_2017_cff import run2_GEM_2017
 run2_GEM_2017.toModify(trackingParticles, simHitCollections = dict(

@@ -79,7 +79,7 @@ hltbtagValidationSequence = cms.Sequence(
 # fastsim customs
 from Configuration.Eras.Modifier_fastSim_cff import fastSim
 if fastSim.isChosen():
-    HltVertexValidationVertices.SimVertexCollection = cms.InputTag("famosSimHits")
+    HltVertexValidationVertices.SimVertexCollection = cms.InputTag("fastSimProducer")
     # are these customs actually needed?
     #HltVertexValidationVertices.HLTPathNames =cms.vstring(
     #'HLT_PFMET120_NoiseCleaned_BTagCSV07_v',

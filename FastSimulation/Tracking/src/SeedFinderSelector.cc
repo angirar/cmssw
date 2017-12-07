@@ -14,7 +14,8 @@
 #include "RecoTracker/Record/interface/CkfComponentsRecord.h"
 #include "RecoPixelVertexing/PixelTriplets/interface/HitTripletGeneratorFromPairAndLayers.h"
 #include "RecoPixelVertexing/PixelTriplets/interface/HitTripletGeneratorFromPairAndLayersFactory.h"
-
+#include "RecoPixelVertexing/PixelTriplets/plugins/CAHitTripletGenerator.h"
+#include "RecoPixelVertexing/PixelTriplets/plugins/CAHitQuadrupletGenerator.h"
 // data formats
 #include "DataFormats/TrackerRecHit2D/interface/FastTrackerRecHit.h"
 
@@ -35,11 +36,29 @@ SeedFinderSelector::SeedFinderSelector(const edm::ParameterSet & cfg,edm::Consum
         const edm::ParameterSet & tripletConfig = cfg.getParameter<edm::ParameterSet>("MultiHitGeneratorFactory");
         multiHitGenerator_.reset(MultiHitGeneratorFromPairAndLayersFactory::get()->create(tripletConfig.getParameter<std::string>("ComponentName"),tripletConfig));
     }
-
-    if(pixelTripletGenerator_ && multiHitGenerator_)
+    if(cfg.exists("CAHitTripletGeneratorFactory"))
     {
-	throw cms::Exception("FastSimTracking") << "It is forbidden to specify both 'pixelTripletGeneratorFactory' and 'MultiHitGeneratorFactory' in configuration of SeedFinderSelection";
+        const edm::ParameterSet & tripletConfig = cfg.getParameter<edm::ParameterSet>("CAHitTripletGeneratorFactory");
+	//    CAHitTriplGenerator_.reset(HitTripletGeneratorFactory::get()->create(tripletConfig.getParameter<std::string>("ComponentName"),tripletConfig,consumesCollector)); 
     }
+
+    if(cfg.exists("CAHitQuadrupletGeneratorFactory"))
+    {
+        const edm::ParameterSet & quadrupletConfig = cfg.getParameter<edm::ParameterSet>("CAHitQuadrupletGeneratorFactory");
+        //    CAHitQuadGenerator_.reset(HitQuadrupletGeneratorFactory::get()->create(quadrupletConfig.getParameter<std::string>("ComponentName"),quadrupletConfig,consumesCollector));                                                                                                                                                                     
+    }
+
+    if((pixelTripletGenerator_ && multiHitGenerator_) || (CAHitTriplGenerator_ && pixelTripletGenerator_) || (CAHitTriplGenerator_ && multiHitGenerator_))
+    {
+      throw cms::Exception("FastSimTracking") << "It is forbidden to specify together 'pixelTripletGeneratorFactory', 'CAHitTripletGeneratorFactory' and 'MultiHitGeneratorFa\
+ctory' in configuration of SeedFinderSelection";
+    }
+    if((pixelTripletGenerator_ && CAHitQuadGenerator_) || (CAHitTriplGenerator_ && CAHitQuadGenerator_) || (CAHitQuadGenerator_ && multiHitGenerator_))
+    {
+      throw cms::Exception("FastSimTracking") << "It is forbidden to specify 'CAHitQuadrupletGeneratorFactory' together with 'pixelTripletGeneratorFactory', 'CAHitTripletGen\
+eratorFactory' or 'MultiHitGeneratorFactory' in configuration of SeedFinderSelection";
+    }
+
 }
 
 
@@ -95,7 +114,7 @@ bool SeedFinderSelector::pass(const std::vector<const FastTrackerRecHit *>& hits
     }
     
     // check the inner 3 hits
-    if(pixelTripletGenerator_ || multiHitGenerator_)
+    if(pixelTripletGenerator_ || multiHitGenerator_ || CAHitTriplGenerator_)
     {
 	if(hits.size() < 3)
 	{
@@ -119,8 +138,27 @@ bool SeedFinderSelector::pass(const std::vector<const FastTrackerRecHit *>& hits
 	    multiHitGenerator_->hitTriplets(*trackingRegion_,tripletresult,*eventSetup_,result,&thmp,thirdLayerDetLayer,1);
 	    return !tripletresult.empty();
 	}
-
+	else if(CAHitTriplGenerator_)
+	{
+	  // OrderedHitTriplets tripletresult;                                                                                                                               
+	  // CAHitTriplGenerator_->hitTriplets(*trackingRegion_,tripletresult,*ev_,*eventSetup_);                                                                            
+	  // return tripletresult.size()!=0;                                                                                                                                
+	  return true;
+	}
     }
+
+    if(CAHitQuadGenerator_)
+    {
+      if(hits.size() < 4)
+      {
+	throw cms::Exception("FastSimTracking") << "For the given configuration, SeedFinderSelector::pass requires at least 4 hits";
+      }
+      // OrderedHitSeeds quadrupletresult;                                                                                                                                  
+      // CAHitQuadGenerator_->hitQuadruplets(*trackingRegion_,quadrupletresult,*ev_,*eventSetup_);                                                                           
+      // return quadrupletresult.size()!=0;                                                                                                                                  
+      return true;
+    }
+    
     return true;
     
 }

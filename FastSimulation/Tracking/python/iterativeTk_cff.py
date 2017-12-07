@@ -6,6 +6,9 @@
 import FWCore.ParameterSet.Config as cms
 from TrackingTools.MaterialEffects.MaterialPropagatorParabolicMf_cff import *
 from FastSimulation.Tracking.InitialStep_cff import *
+from FastSimulation.Tracking.DetachedQuadStep_cff import *
+from FastSimulation.Tracking.HighPtTripletStep_cff import *
+from FastSimulation.Tracking.LowPtQuadStep_cff import *
 from FastSimulation.Tracking.DetachedTripletStep_cff import *
 from FastSimulation.Tracking.LowPtTripletStep_cff import *
 from FastSimulation.Tracking.PixelPairStep_cff import *
@@ -24,12 +27,16 @@ generalTracksBeforeMixing = RecoTracker.FinalTrackSelectors.earlyGeneralTracks_c
 
 iterTracking = cms.Sequence(
     InitialStep
-    +DetachedTripletStep
-    +LowPtTripletStep
-    +PixelPairStep
-    +MixedTripletStep
-    +PixelLessStep
-    +TobTecStep
-    +JetCoreRegionalStep
+    +LowPtQuadStep                                                                                                                                                          
+    +HighPtTripletStep                                                                                                                                                       
+#    +LowPtTripletStep                                                                                                                                                         
+#    +DetachedQuadStep                                                                                                                                                        
+#    +DetachedTripletStep                                                                                                                                                      
+#    #+LowPtTripletStep                                                                                                                                                        
+#    +PixelPairStep                                                                                                                                                            
+#    +MixedTripletStep                                                                                                                                                         
+#    +PixelLessStep                                                                                                                                                            
+#    +TobTecStep                                                                                                                                                               
+    +JetCoreRegionalStep  
     +generalTracksBeforeMixing)
 

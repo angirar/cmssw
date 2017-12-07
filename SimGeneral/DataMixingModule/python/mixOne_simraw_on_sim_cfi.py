@@ -264,5 +264,5 @@ if fastSim.isChosen():
     import FastSimulation.Tracking.recoTrackAccumulator_cfi
     mixData.tracker = FastSimulation.Tracking.recoTrackAccumulator_cfi.recoTrackAccumulator.clone()
     mixData.tracker.pileUpTracks = cms.InputTag("mix","generalTracks")
-    mixData.hitsProducer = "famosSimHits"
+    mixData.hitsProducer = "fastSimProducer"
 

@@ -13,14 +13,12 @@ caloStage1LegacyFormatDigis = None
 gtDigis = None
 gmtDigis = None
 
-loadDigiAliasesWasCalled = False
-
 def loadDigiAliases(premix=False):
+
     nopremix = not premix
 
-    global generalTracks,ecalPreshowerDigis,ecalDigis,hcalDigis,muonDTDigis,muonCSCDigis,muonRPCDigis,loadDigiAliasesWasCalled
+    global generalTracks,ecalPreshowerDigis,ecalDigis,hcalDigis,muonDTDigis,muonCSCDigis,muonRPCDigis
 
-    loadDigiAliasesWasCalled=True
     generalTracks = cms.EDAlias(
         **{"mix" if nopremix else "mixData" :
            cms.VPSet(

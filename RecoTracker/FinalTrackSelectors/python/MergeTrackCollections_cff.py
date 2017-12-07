@@ -59,10 +59,7 @@ fastSim.toReplaceWith(generalTracksSequence,
         )
 )
 def _fastSimGeneralTracks(process):
-    from FastSimulation.Configuration.DigiAliases_cff import loadDigiAliasesWasCalled
-    if loadDigiAliasesWasCalled:
-        from FastSimulation.Configuration.DigiAliases_cff import generalTracks
-        process.generalTracks = generalTracks
+    if hasattr(process,"generalTracks") and isinstance(process.generalTracks,cms.EDAlias):
         return
     from Configuration.StandardSequences.Digi_cff import generalTracks
     process.generalTracks = generalTracks

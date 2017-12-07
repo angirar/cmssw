@@ -133,6 +133,9 @@ _fastSim_initialStepSeeds = FastSimulation.Tracking.TrajectorySeedProducer_cfi.t
     seedFinderSelector = dict( pixelTripletGeneratorFactory = _hitSetProducerToFactoryPSet(initialStepHitTriplets))
 )
 _fastSim_initialStepSeeds.seedFinderSelector.pixelTripletGeneratorFactory.SeedComparitorPSet.ComponentName = "none"
+trackingPhase1.toModify(_fastSim_initialStepSeeds,seedFinderSelector = dict( CAHitQuadrupletGeneratorFactory = _hitSetProducerToFactoryPSet(initialStepHitQuadruplets)))
+#trackingPhase1.toModify(_fastSim_initialStepSeeds,seedFinderSelector.CAHitQuadrupletGeneratorFactory.SeedComparitorPSet.ComponentName = "none")
+
 fastSim.toReplaceWith(initialStepSeeds,_fastSim_initialStepSeeds)
 
 
@@ -404,7 +407,8 @@ _InitialStep_fastSim = cms.Sequence(initialStepTrackingRegions
                            +initialStepTrackCandidates
                            +initialStepTracks                                    
                            +firstStepPrimaryVerticesBeforeMixing
-                           +initialStepClassifier1*initialStepClassifier2*initialStepClassifier3
+                           +initialStepClassifier1
+#*initialStepClassifier2*initialStepClassifier3
                            +initialStep
                            )
 fastSim.toReplaceWith(InitialStep, _InitialStep_fastSim)
