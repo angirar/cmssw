@@ -456,7 +456,7 @@ fastSim.toReplaceWith(MixedTripletStep,
                                    +mixedTripletStepSeeds
                                    +mixedTripletStepTrackCandidates
                                    +mixedTripletStepTracks
-                                   +mixedTripletStepClassifier1*mixedTripletStepClassifier2
+#                                   +mixedTripletStepClassifier1#*mixedTripletStepClassifier2
                                    +mixedTripletStep                                 
                                    )
 )

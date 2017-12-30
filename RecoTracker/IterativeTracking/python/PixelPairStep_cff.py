@@ -89,6 +89,7 @@ pixelPairStepHitDoublets = _hitPairEDProducer.clone(
     trackingRegions = "pixelPairStepTrackingRegions",
     produceSeedingHitSets = True,
 )
+fastSim.toModify(pixelPairStepHitDoublets, produceSeedingHitSets = False)
 from RecoTracker.TkSeedGenerator.seedCreatorFromRegionConsecutiveHitsEDProducer_cff import seedCreatorFromRegionConsecutiveHitsEDProducer as _seedCreatorFromRegionConsecutiveHitsEDProducer
 pixelPairStepSeeds = _seedCreatorFromRegionConsecutiveHitsEDProducer.clone(
     seedingHitSets = "pixelPairStepHitDoublets",
@@ -102,8 +103,13 @@ pixelPairStepSeeds = _seedCreatorFromRegionConsecutiveHitsEDProducer.clone(
     )
 )
 
+#_fastsim_pixelPairStepSeeds = pixelPairStepSeeds.clone()
+#fastSim.toModify(pixelPairStepSeeds, SeedComparitorPSet = dict(ComponentName = 'none'))
+#fastSim.toReplaceWith(pixelPairStepSeeds, _fastsim_pixelPairStepSeeds)
+
 # Clone for the phase1 recovery mode
 pixelPairStepSeedsA = pixelPairStepSeeds.clone()
+#fastSim.toModify(pixelPairStepSeedsA, SeedComparitorPSet = dict(ComponentName = 'none'))
 
 #have to do it after making pixelPairStepSeedsA since pixelPairStepSeedsB clones A
 # and then modifies it
@@ -153,7 +159,7 @@ from RecoTracker.TkSeedGenerator.GlobalCombinedSeeds_cfi import globalCombinedSe
 _pixelPairStepSeedsMerged = _globalCombinedSeeds.clone(
     seedCollections = ["pixelPairStepSeedsA", "pixelPairStepSeedsB"],
 )
-trackingPhase1.toReplaceWith(pixelPairStepSeeds, _pixelPairStepSeedsMerged)
+#trackingPhase1.toReplaceWith(pixelPairStepSeeds, _pixelPairStepSeedsMerged)
 trackingPhase1QuadProp.toReplaceWith(pixelPairStepSeeds, _pixelPairStepSeedsMerged)
 
 
@@ -290,9 +296,11 @@ pixelPairStep.src = 'pixelPairStepTracks'
 pixelPairStep.mva.GBRForestLabel = 'MVASelectorIter2_13TeV'
 pixelPairStep.qualityCuts = [-0.2,0.0,0.3]
 
+fastSim.toModify(pixelPairStep, vertices = "firstStepPrimaryVerticesBeforeMixing")
+
 trackingPhase1.toModify(pixelPairStep, mva=dict(GBRForestLabel = 'MVASelectorPixelPairStep_Phase1'))
 trackingPhase1QuadProp.toModify(pixelPairStep, mva=dict(GBRForestLabel = 'MVASelectorPixelPairStep_Phase1'))
-fastSim.toModify(pixelPairStep, vertices = "firstStepPrimaryVerticesBeforeMixing")
+#fastSim.toModify(pixelPairStep, vertices = "firstStepPrimaryVerticesBeforeMixing")
 
 # For LowPU and Phase2PU140
 import RecoTracker.IterativeTracking.LowPtTripletStep_cff
@@ -390,6 +398,10 @@ pixelPairStepMasks = FastSimulation.Tracking.FastTrackerRecHitMaskProducer_cfi.m
 fastSim.toReplaceWith(PixelPairStep,
                       cms.Sequence(pixelPairStepMasks
                                    +pixelPairStepTrackingRegions
+#                                   +pixelPairStepHitDoublets
+#                                   +pixelPairStepHitDoubletsB
+#                                   +pixelPairStepSeedsA
+#                                   +pixelPairStepSeedsB
                                    +pixelPairStepSeeds
                                    +pixelPairStepTrackCandidates
                                    +pixelPairStepTracks

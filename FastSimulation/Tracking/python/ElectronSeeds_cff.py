@@ -7,9 +7,9 @@ _newCombinedSeeds = cms.EDProducer(
     seedCollections = cms.VInputTag(
         cms.InputTag('initialStepSeeds'),
         #cms.InputTag('lowPtTripletStepSeeds'),
-        cms.InputTag('pixelPairStepSeeds'),
-        cms.InputTag('mixedTripletStepSeeds'),
-        cms.InputTag('pixelLessStepSeeds'),
+#        cms.InputTag('pixelPairStepSeeds'),
+#        cms.InputTag('mixedTripletStepSeeds'),
+#        cms.InputTag('pixelLessStepSeeds'),
         )
     )
 

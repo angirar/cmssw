@@ -88,16 +88,6 @@ detachedTripletStepSeeds = _seedCreatorFromRegionConsecutiveHitsTripletOnlyEDPro
         ClusterShapeCacheSrc = cms.InputTag('siPixelClusterShapeCache')
     ),
 )
-import FastSimulation.Tracking.TrajectorySeedProducer_cfi
-_fastSim_detachedTripletStepSeeds = FastSimulation.Tracking.TrajectorySeedProducer_cfi.trajectorySeedProducer.clone(
-    layerList = detachedTripletStepSeedLayers.layerList.value(),
-    trackingRegions = "detachedTripletStepTrackingRegions",
-    hitMasks = cms.InputTag("detachedTripletStepMasks"),
-    seedFinderSelector = dict( pixelTripletGeneratorFactory = _hitSetProducerToFactoryPSet(detachedTripletStepHitTriplets) )
-)
-trackingPhase1.toModify(_fastSim_detachedTripletStepSeeds,seedFinderSelector = dict( CAHitTripletGeneratorFactory = _hitSetProducerToFactoryPSet(detachedTripletStepHitTriplets)))
-fastSim.toReplaceWith(detachedTripletStepSeeds,_fastSim_detachedTripletStepSeeds)
-
 
 from RecoPixelVertexing.PixelTriplets.caHitTripletEDProducer_cfi import caHitTripletEDProducer as _caHitTripletEDProducer
 trackingPhase1.toModify(detachedTripletStepHitDoublets, layerPairs = [0,1]) # layer pairs (0,1), (1,2)
@@ -113,6 +103,17 @@ trackingPhase1.toReplaceWith(detachedTripletStepHitTriplets, _caHitTripletEDProd
     CAPhiCut = 0,
     CAHardPtCut = 0.2,
 ))
+
+import FastSimulation.Tracking.TrajectorySeedProducer_cfi
+_fastSim_detachedTripletStepSeeds = FastSimulation.Tracking.TrajectorySeedProducer_cfi.trajectorySeedProducer.clone(
+    layerList = detachedTripletStepSeedLayers.layerList.value(),
+    trackingRegions = "detachedTripletStepTrackingRegions",
+    hitMasks = cms.InputTag("detachedTripletStepMasks"),
+    seedFinderSelector = dict( CAHitTripletGeneratorFactory = _hitSetProducerToFactoryPSet(detachedTripletStepHitTriplets))
+#pixelTripletGeneratorFactory = _hitSetProducerToFactoryPSet(detachedTripletStepHitTriplets) )
+)
+#trackingPhase1.toModify(_fastSim_detachedTripletStepSeeds,seedFinderSelector = dict( CAHitTripletGeneratorFactory = _hitSetProducerToFactoryPSet(detachedTripletStepHitTriplets)))
+fastSim.toReplaceWith(detachedTripletStepSeeds,_fastSim_detachedTripletStepSeeds)
 
 # QUALITY CUTS DURING TRACK BUILDING
 import TrackingTools.TrajectoryFiltering.TrajectoryFilter_cff
@@ -365,6 +366,6 @@ fastSim.toReplaceWith(DetachedTripletStep,
                                    +detachedTripletStepSeeds
                                    +detachedTripletStepTrackCandidates
                                    +detachedTripletStepTracks
-                                   +detachedTripletStepClassifier1*detachedTripletStepClassifier2
+                                   +detachedTripletStepClassifier1#*detachedTripletStepClassifier2
                                    +detachedTripletStep
                                    ) )

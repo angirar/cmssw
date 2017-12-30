@@ -484,6 +484,7 @@ fastSim.toReplaceWith(TobTecStep,
                                    +tobTecStepSeeds
                                    +tobTecStepTrackCandidates
                                    +tobTecStepTracks
-                                   +tobTecStepClassifier1*tobTecStepClassifier2                           +tobTecStep
+#                                   +tobTecStepClassifier1#*tobTecStepClassifier2
+                                   +tobTecStep
                                    )
 )

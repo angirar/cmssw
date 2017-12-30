@@ -9,6 +9,7 @@ hcalDigis = None
 muonDTDigis = None
 muonCSCDigis = None
 muonRPCDigis = None
+muonGEMDigis = None
 caloStage1LegacyFormatDigis = None
 gtDigis = None
 gmtDigis = None
@@ -144,7 +145,20 @@ def loadDigiAliases(premix=False):
                 )
            }
           )
-    
+
+    muonGEMDigis = cms.EDAlias(
+        **{"simMuonGEMDigis" if nopremix else "mixData" :
+               cms.VPSet(
+            cms.PSet(
+                    type = cms.string("GEMDetIdGEMDigiMuonDigiCollection")
+                    ),
+                #cms.PSet(                                                                                                                                                      
+                #    type = cms.string("RPCDigiSimLinkedmDetSetVector")                                                                                                         
+                #    )                                                                                                                                                          
+                )
+              }
+          )
+
 def loadTriggerDigiAliases():
 
     global gctDigis,gtDigis,gmtDigis,caloStage1LegacyFormatDigis

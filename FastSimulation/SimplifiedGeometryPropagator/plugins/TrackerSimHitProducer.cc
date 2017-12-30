@@ -1,7 +1,7 @@
 #include <vector>
 #include <memory>
-#include <TH2.h>
-#include <TFile.h>
+// #include <TH2.h>
+// #include <TFile.h>
 
 // framework
 #include "FWCore/Framework/interface/Event.h"
@@ -36,8 +36,8 @@
 #include "Geometry/CommonDetUnit/interface/GeomDet.h"
 #include "CondFormats/External/interface/DetID.h"
 #include "FWCore/Framework/interface/ProducerBase.h"
-#include "FWCore/ServiceRegistry/interface/Service.h"
-#include "CommonTools/UtilAlgos/interface/TFileService.h"
+// #include "FWCore/ServiceRegistry/interface/Service.h"
+// #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 

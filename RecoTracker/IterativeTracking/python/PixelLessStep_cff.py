@@ -365,7 +365,7 @@ fastSim.toReplaceWith(PixelLessStep,
                                    +pixelLessStepSeeds
                                    +pixelLessStepTrackCandidates
                                    +pixelLessStepTracks
-                                   +pixelLessStepClassifier1*pixelLessStepClassifier2
+#                                   +pixelLessStepClassifier1#*pixelLessStepClassifier2
                                    +pixelLessStep                             
                                    )
 )

@@ -130,10 +130,11 @@ _fastSim_lowPtTripletStepSeeds = FastSimulation.Tracking.TrajectorySeedProducer_
     layerList = lowPtTripletStepSeedLayers.layerList.value(),
     trackingRegions = "lowPtTripletStepTrackingRegions",
     hitMasks = cms.InputTag("lowPtTripletStepMasks"),
-    seedFinderSelector = dict( pixelTripletGeneratorFactory = _hitSetProducerToFactoryPSet(lowPtTripletStepHitTriplets))
+    seedFinderSelector = dict( CAHitTripletGeneratorFactory = _hitSetProducerToFactoryPSet(lowPtTripletStepHitTriplets))
+#pixelTripletGeneratorFactory = _hitSetProducerToFactoryPSet(lowPtTripletStepHitTriplets))
 )
-_fastSim_lowPtTripletStepSeeds.seedFinderSelector.pixelTripletGeneratorFactory.SeedComparitorPSet.ComponentName = "none"
-trackingPhase1.toModify(_fastSim_lowPtTripletStepSeeds,seedFinderSelector = dict( CAHitTripletGeneratorFactory = _hitSetProducerToFactoryPSet(lowPtTripletStepHitTriplets)))
+#_fastSim_lowPtTripletStepSeeds.seedFinderSelector.pixelTripletGeneratorFactory.SeedComparitorPSet.ComponentName = "none"
+#trackingPhase1.toModify(_fastSim_lowPtTripletStepSeeds,seedFinderSelector = dict( CAHitTripletGeneratorFactory = _hitSetProducerToFactoryPSet(lowPtTripletStepHitTriplets)))
 #trackingPhase1.toModify(_fastSim_lowPtTripletStepSeeds,seedFinderSelector.CAHitTripletGeneratorFactory.SeedComparitorPSet.ComponentName = "none")
 
 fastSim.toReplaceWith(lowPtTripletStepSeeds,_fastSim_lowPtTripletStepSeeds)

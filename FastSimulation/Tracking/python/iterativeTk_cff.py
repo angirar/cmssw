@@ -1,4 +1,5 @@
 
+
 ##############################
 # FastSim equivalent of RecoTracker/IterativeTracking/python/iterativeTk_cff.py
 ##############################
@@ -29,14 +30,14 @@ iterTracking = cms.Sequence(
     InitialStep
     +LowPtQuadStep                                                                                                                                                          
     +HighPtTripletStep                                                                                                                                                       
-#    +LowPtTripletStep                                                                                                                                                         
-#    +DetachedQuadStep                                                                                                                                                        
-#    +DetachedTripletStep                                                                                                                                                      
-#    #+LowPtTripletStep                                                                                                                                                        
-#    +PixelPairStep                                                                                                                                                            
-#    +MixedTripletStep                                                                                                                                                         
-#    +PixelLessStep                                                                                                                                                            
-#    +TobTecStep                                                                                                                                                               
+    +LowPtTripletStep                                                                                                                                                         
+    +DetachedQuadStep                                                                                                                                                        
+    +DetachedTripletStep                                                                                                                                                      
+    #+LowPtTripletStep                                                                                                                                                        
+    +PixelPairStep                                                                                                                                                            
+    +MixedTripletStep                                                                                                                                                         
+    +PixelLessStep                                                                                                                                                            
+    +TobTecStep                                                                                                                                                               
     +JetCoreRegionalStep  
     +generalTracksBeforeMixing)
 
