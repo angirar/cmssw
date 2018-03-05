@@ -168,7 +168,7 @@ from RecoTracker.TkSeedGenerator.GlobalCombinedSeeds_cfi import globalCombinedSe
 _pixelPairStepSeedsMerged = _globalCombinedSeeds.clone(
     seedCollections = ["pixelPairStepSeedsA", "pixelPairStepSeedsB"],
 )
-trackingPhase1.toReplaceWith(pixelPairStepSeeds, _pixelPairStepSeedsMerged)
+#trackingPhase1.toReplaceWith(pixelPairStepSeeds, _pixelPairStepSeedsMerged)
 
 
 # QUALITY CUTS DURING TRACK BUILDING

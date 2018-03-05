@@ -10,6 +10,8 @@ class FastTrackerRecHit;
 class MultiHitGeneratorFromPairAndLayers;
 class HitTripletGeneratorFromPairAndLayers;
 class MeasurementTracker;
+class CAHitTripletGenerator;
+class CAHitQuadrupletGenerator;
 
 namespace edm
 {
@@ -32,16 +34,19 @@ public:
     void setTrackingRegion(const TrackingRegion * trackingRegion){trackingRegion_ = trackingRegion;}
     
     bool pass(const std::vector<const FastTrackerRecHit *>& hits) const;
+    
 
 private:
     
     std::unique_ptr<HitTripletGeneratorFromPairAndLayers> pixelTripletGenerator_;
     std::unique_ptr<MultiHitGeneratorFromPairAndLayers> multiHitGenerator_;
+    std::unique_ptr<CAHitTripletGenerator> CAHitTriplGenerator_;
+    std::unique_ptr<CAHitQuadrupletGenerator> CAHitQuadGenerator_;
     const TrackingRegion * trackingRegion_;
     const edm::EventSetup * eventSetup_;
     const MeasurementTracker * measurementTracker_;
     const std::string measurementTrackerLabel_;
-    
 };
+
 
 #endif
