@@ -187,7 +187,7 @@ SeedingLayerSetsBuilder::SeedingLayerSetsBuilder(const edm::ParameterSet & cfg, 
 {
   std::vector<std::string> namesPset = cfg.getParameter<std::vector<std::string> >("layerList");
   std::vector<std::vector<std::string> > layerNamesInSets = this->layerNamesInSets(namesPset);
-
+  fastSimrecHitsToken_ = iC.consumes<FastTrackerRecHitCollection>(edm::InputTag("fastTrackerRecHits"));
   // debug printout of layers
   typedef std::vector<std::string>::const_iterator IS;
   typedef std::vector<std::vector<std::string> >::const_iterator IT;
@@ -366,13 +366,29 @@ std::vector<SeedingLayerSetsBuilder::SeedingLayerId> SeedingLayerSetsBuilder::la
 std::unique_ptr<SeedingLayerSetsHits> SeedingLayerSetsBuilder::hits(const edm::Event& ev, const edm::EventSetup& es) {
   updateEventSetup(es);
 
+  //-----------------new for FastSim-------------------------
+  edm::Handle<FastTrackerRecHitCollection> fastSimrechits_;
+  ev.getByToken(fastSimrecHitsToken_,fastSimrechits_);
+  SeedingLayerSetsHits::OwnedHits layerhits_;
+  //---------------------------------------------------------
+
   auto ret = std::make_unique<SeedingLayerSetsHits>(theNumberOfLayersInSet,
                                                     &theLayerSetIndices,
                                                     &theLayerNames,
                                                     &theLayerDets);
 
   for(auto& layer: theLayers) {
-    ret->addHits(layer.nameIndex, layer.extractor->hits((const TkTransientTrackingRecHitBuilder &)(*theTTRHBuilders[layer.nameIndex]), ev, es));
+    //--------------------new for FastSim---------------------
+    layerhits_.clear();
+    for(auto &rh : *fastSimrechits_){
+      BaseTrackerRecHit const * b = &rh;
+      SeedingLayerSetsHits::HitPointer h(*b);
+      layerhits_.push_back(h);
+    }
+    ret->addHits(layer.nameIndex, layerhits_);
+    //--------------------------------------------------------
+
+    //    ret->addHits(layer.nameIndex, layer.extractor->hits((const TkTransientTrackingRecHitBuilder &)(*theTTRHBuilders[layer.nameIndex]), ev, es));
   }
   ret->shrink_to_fit();
   return ret;
