@@ -20,7 +20,8 @@
 #include "RecoPixelVertexing/PixelTriplets/interface/OrderedHitSeeds.h"
 #include "FastSimulation/Tracking/interface/CAQuadGeneratorFactory.h"
 #include "FastSimulation/Tracking/interface/CATriGeneratorFactory.h"
-
+#include "TrackingTools/TransientTrackingRecHit/interface/SeedingLayerSetsHits.h"
+#include "RecoTracker/TkSeedingLayers/interface/SeedingLayerSetsBuilder.h"
 // data formats
 #include "DataFormats/TrackerRecHit2D/interface/FastTrackerRecHit.h"
 
@@ -51,6 +52,7 @@ SeedFinderSelector::SeedFinderSelector(const edm::ParameterSet & cfg,edm::Consum
     {
         const edm::ParameterSet & quadrupletConfig = cfg.getParameter<edm::ParameterSet>("CAHitQuadrupletGeneratorFactory");
 	CAHitQuadGenerator_.reset(CAQuadGeneratorFactory::get()->create(quadrupletConfig.getParameter<std::string>("ComponentName"),quadrupletConfig,consumesCollector));     
+	seedingLayers_ = new SeedingLayerSetsBuilder(quadrupletConfig, consumesCollector);
     }
     if((pixelTripletGenerator_ && multiHitGenerator_) || (CAHitQuadGenerator_ && pixelTripletGenerator_) || (CAHitTriplGenerator_ && multiHitGenerator_))
     {
@@ -80,6 +82,7 @@ void SeedFinderSelector::initEvent(const edm::Event & ev,const edm::EventSetup &
         multiHitGenerator_->initES(es);
     }
     if(CAHitQuadGenerator_){
+      seedingLayer = seedingLayers_->hits(ev, es);
       CAHitQuadGenerator_->initEvent(ev,es);
     }    
 }
