@@ -46,6 +46,8 @@ private:
     const edm::EventSetup * eventSetup_;
     const MeasurementTracker * measurementTracker_;
     const std::string measurementTrackerLabel_;
+    SeedingLayerSetsBuilder* seedingLayers_;
+    std::unique_ptr<SeedingLayerSetsHits> seedingLayer;
 };
 
 

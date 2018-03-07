@@ -65,6 +65,16 @@ _initialStepCAHitQuadruplets = _caHitQuadrupletEDProducer.clone(
     fitFastCircleChi2Cut = True,
     CAThetaCut = 0.0012,
     CAPhiCut = 0.2,
+    layerList = initialStepSeedLayers.layerList.value(),
+    BPix = cms.PSet(
+        TTRHBuilder = cms.string('WithoutRefit'),
+        HitProducer = cms.string('TrackingRecHitProducer'),
+        ),
+    FPix = cms.PSet(
+        TTRHBuilder = cms.string('WithoutRefit'),
+        HitProducer = cms.string('TrackingRecHitProducer'),
+        ),
+
 )
 initialStepHitQuadruplets = _initialStepCAHitQuadruplets.clone()
 trackingPhase1.toModify(initialStepHitDoublets, layerPairs = [0,1,2]) # layer pairs (0,1), (1,2), (2,3)
