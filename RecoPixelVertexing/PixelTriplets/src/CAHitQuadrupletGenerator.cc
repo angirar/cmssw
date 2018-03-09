@@ -44,7 +44,7 @@ useBendingCorrection(cfg.getParameter<bool>("useBendingCorrection")),
 caThetaCut(cfg.getParameter<double>("CAThetaCut")),
 caPhiCut(cfg.getParameter<double>("CAPhiCut")),
 caHardPtCut(cfg.getParameter<double>("CAHardPtCut")),
-layerList(cfg.getParameter<std::vector<std::string>>("layerList")),
+layerList(cfg.getParameter<std::vector<std::string>>("layerList"))
 {
   edm::ParameterSet comparitorPSet = cfg.getParameter<edm::ParameterSet>("SeedComparitorPSet");
   std::string comparitorName = comparitorPSet.getParameter<std::string>("ComponentName");
@@ -55,6 +55,9 @@ layerList(cfg.getParameter<std::vector<std::string>>("layerList")),
 }
 
 void CAHitQuadrupletGenerator::fillDescriptions(edm::ParameterSetDescription& desc) {
+  edm::ParameterSetDescription empty;
+  empty.setAllowAnything();
+
   desc.add<double>("extraHitRPhitolerance", 0.1);
   desc.add<bool>("fitFastCircle", false);
   desc.add<bool>("fitFastCircleChi2Cut", false);

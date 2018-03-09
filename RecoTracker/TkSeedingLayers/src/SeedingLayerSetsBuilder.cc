@@ -8,11 +8,11 @@
 
 #include "RecoTracker/TkDetLayers/interface/GeometricSearchTracker.h"
 #include "RecoTracker/Record/interface/TrackerRecoGeometryRecord.h"
-
+#include "Geometry/Records/interface/TrackerTopologyRcd.h"
 #include "TrackingTools/Records/interface/TransientRecHitRecord.h"
 #include "TrackingTools/TransientTrackingRecHit/interface/TransientTrackingRecHit.h"
 #include "RecoTracker/TransientTrackingRecHit/interface/TkTransientTrackingRecHitBuilder.h"
-
+#include "DataFormats/SiPixelDetId/interface/PixelSubdetector.h"
 #include "TrackingTools/DetLayers/interface/BarrelDetLayer.h"
 #include "TrackingTools/DetLayers/interface/ForwardDetLayer.h"
 
@@ -369,6 +369,10 @@ std::unique_ptr<SeedingLayerSetsHits> SeedingLayerSetsBuilder::hits(const edm::E
   //-----------------new for FastSim-------------------------
   edm::Handle<FastTrackerRecHitCollection> fastSimrechits_;
   ev.getByToken(fastSimrecHitsToken_,fastSimrechits_);
+  edm::ESHandle<TrackerTopology> trackerTopology;
+  es.get<TrackerTopologyRcd>().get(trackerTopology);
+
+  std::vector<BaseTrackerRecHit *> hitptr_;
   SeedingLayerSetsHits::OwnedHits layerhits_;
   //---------------------------------------------------------
 
@@ -381,11 +385,42 @@ std::unique_ptr<SeedingLayerSetsHits> SeedingLayerSetsBuilder::hits(const edm::E
     //--------------------new for FastSim---------------------
     layerhits_.clear();
     for(auto &rh : *fastSimrechits_){
-      BaseTrackerRecHit const * b = &rh;
-      SeedingLayerSetsHits::HitPointer h(*b);
-      layerhits_.push_back(h);
+      std::string hitlayer;
+      int layerNo;
+      std::string side;
+      if( (rh.det()->geographicalId()).subdetId() == PixelSubdetector::PixelBarrel){
+	layerNo = (*trackerTopology.product()).pxbLayer(rh.det()->geographicalId());
+	if(layerNo == 1)
+	  hitlayer = "BPix1";
+	if(layerNo == 2)
+	  hitlayer = "BPix2";
+	if(layerNo == 3)
+	  hitlayer = "BPix3";
+	if(layerNo == 4)
+	  hitlayer = "BPix4";
+      }
+      else if ((rh.det()->geographicalId()).subdetId() == PixelSubdetector::PixelEndcap){
+	layerNo = (*trackerTopology.product()).pxfDisk(rh.det()->geographicalId());
+	side = (*trackerTopology.product()).pxfSide(rh.det()->geographicalId())==1 ? "_neg" : "_pos";
+	if(layerNo == 1)
+	  hitlayer = "FPix1"+side;
+	if(layerNo == 2)
+	  hitlayer = "FPix2"+side;
+	if(layerNo == 3)
+	  hitlayer = "FPix3"+side;
+      }
+      else hitlayer = "UNKWN"; //strip                                                                                                                                    
+      if(theLayerNames[layer.nameIndex] == hitlayer){
+	FastTrackerRecHit * rh_ = const_cast<FastTrackerRecHit *>(&rh);
+	BaseTrackerRecHit * b = rh_;
+	hitptr_.push_back(b);
+      }
+      else continue;
     }
-    ret->addHits(layer.nameIndex, layerhits_);
+    for(auto h : hitptr_)
+      layerhits_.emplace_back(h);
+    
+    ret->addHits(layer.nameIndex, std::move(layerhits_));
     //--------------------------------------------------------
 
     //    ret->addHits(layer.nameIndex, layer.extractor->hits((const TkTransientTrackingRecHitBuilder &)(*theTTRHBuilders[layer.nameIndex]), ev, es));
