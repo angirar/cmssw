@@ -12,7 +12,8 @@ class HitTripletGeneratorFromPairAndLayers;
 class MeasurementTracker;
 class CAHitTripletGenerator;
 class CAHitQuadrupletGenerator;
-
+class SeedingLayerSetsHits;
+class SeedingLayerSetsBuilder;
 namespace edm
 {
     class Event;
