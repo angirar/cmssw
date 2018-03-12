@@ -5,6 +5,7 @@
 ##############################
 
 import FWCore.ParameterSet.Config as cms
+from Configuration.Eras.Modifier_trackingPhase1_cff import trackingPhase1
 from TrackingTools.MaterialEffects.MaterialPropagatorParabolicMf_cff import *
 from FastSimulation.Tracking.InitialStep_cff import *
 from FastSimulation.Tracking.DetachedQuadStep_cff import *
@@ -28,15 +29,27 @@ generalTracksBeforeMixing = RecoTracker.FinalTrackSelectors.earlyGeneralTracks_c
 
 iterTracking = cms.Sequence(
     InitialStep
-    +LowPtQuadStep                                                                                                                    
-    +HighPtTripletStep                                                                                                               
-    +LowPtTripletStep                                                                                                               
-    +DetachedQuadStep                                                                                                                  
-    +DetachedTripletStep                                                                                                                  
-    +PixelPairStep                                                                                                                   
-    +MixedTripletStep                                                                                                           
-    +PixelLessStep                                                                                                           
-    +TobTecStep                                                                                                           
+    +DetachedTripletStep                                                                                 
+    +LowPtTripletStep                                                                         
+    +PixelPairStep                                                                                        
+    +MixedTripletStep                                                                                 
+    +PixelLessStep                                                                                  
+    +TobTecStep                                                                                            
+    +JetCoreRegionalStep
+    +generalTracksBeforeMixing)
+
+iterTracking_Phase1 = cms.Sequence(
+    InitialStep
+    +LowPtQuadStep                                                                                        
+    +HighPtTripletStep                                                                          
+    +LowPtTripletStep                                                                                   
+    +DetachedQuadStep                                                                               
+    +DetachedTripletStep                                                                       
+    +PixelPairStep                                                                                   
+    +MixedTripletStep                                                                                       
+    +PixelLessStep                                                                              
+    +TobTecStep                                                                                 
     +JetCoreRegionalStep  
     +generalTracksBeforeMixing)
 
+trackingPhase1.toReplaceWith(iterTracking, iterTracking_Phase1)
