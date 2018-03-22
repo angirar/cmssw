@@ -44,7 +44,7 @@ public:
     void setTrackingRegion(const TrackingRegion * trackingRegion){trackingRegion_ = trackingRegion;}
     
     bool pass(const std::vector<const FastTrackerRecHit *>& hits) const;
-    
+    std::string LayerName(int layerN, std::string layerside, bool IsPixBarrel) const;    
 
 private:
     
@@ -58,6 +58,8 @@ private:
     const std::string measurementTrackerLabel_;
     SeedingLayerSetsBuilder* seedingLayers_;
     std::unique_ptr<SeedingLayerSetsHits> seedingLayer;
+    std::vector<unsigned> layerPairs_;
+    edm::ESHandle<TrackerTopology> trackerTopology;
 };
 
 namespace IHD {
