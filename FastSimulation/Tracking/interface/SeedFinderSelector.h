@@ -60,6 +60,8 @@ private:
     std::unique_ptr<SeedingLayerSetsHits> seedingLayer;
     std::vector<unsigned> layerPairs_;
     edm::ESHandle<TrackerTopology> trackerTopology;
+    std::unique_ptr<IHD::ImplBase> impl_;
+    edm::Event * event_;
 };
 
 namespace IHD {
