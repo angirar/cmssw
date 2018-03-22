@@ -132,6 +132,7 @@ private:
     const float caPhiCut = 0.1f;
     const float caHardPtCut = 0.f;
     std::vector<std::string> layerList;
+    const bool isFastSim;
     edm::ParameterSetDescription BPix;
     edm::ParameterSetDescription FPix;
 };

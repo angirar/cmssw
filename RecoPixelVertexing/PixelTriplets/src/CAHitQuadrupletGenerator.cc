@@ -44,7 +44,8 @@ useBendingCorrection(cfg.getParameter<bool>("useBendingCorrection")),
 caThetaCut(cfg.getParameter<double>("CAThetaCut")),
 caPhiCut(cfg.getParameter<double>("CAPhiCut")),
 caHardPtCut(cfg.getParameter<double>("CAHardPtCut")),
-layerList(cfg.getParameter<std::vector<std::string>>("layerList"))
+layerList(cfg.getParameter<std::vector<std::string>>("layerList")),
+isFastSim(cfg.getParameter<bool>("isFastSim"))
 {
   edm::ParameterSet comparitorPSet = cfg.getParameter<edm::ParameterSet>("SeedComparitorPSet");
   std::string comparitorName = comparitorPSet.getParameter<std::string>("ComponentName");
@@ -66,6 +67,7 @@ void CAHitQuadrupletGenerator::fillDescriptions(edm::ParameterSetDescription& de
   desc.add<double>("CAPhiCut", 10);
   desc.add<double>("CAHardPtCut", 0);
   desc.add<std::vector<std::string>>("layerList",{});
+  desc.add<bool>("isFastSim", false);
   desc.add<edm::ParameterSetDescription>("BPix", empty);
   desc.add<edm::ParameterSetDescription>("FPix", empty);
   desc.addOptional<bool>("CAOnlyOneLastHitPerLayerFilter")->setComment("Deprecated and has no effect. To be fully removed later when the parameter is no longer used in HLT configurations.");

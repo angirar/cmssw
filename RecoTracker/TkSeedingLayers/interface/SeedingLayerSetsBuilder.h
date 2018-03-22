@@ -8,12 +8,8 @@
 #include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/Framework/interface/ESWatcher.h"
-#include "FWCore/Utilities/interface/EDGetToken.h"
 #include "Geometry/CommonDetUnit/interface/GeomDetEnumerators.h"
 #include "DataFormats/TrackerCommon/interface/TrackerDetSide.h"
-#include "DataFormats/TrackingRecHit/interface/mayown_ptr.h"
-#include "DataFormats/TrackerRecHit2D/interface/FastTrackerRecHit.h"
-#include "DataFormats/TrackerRecHit2D/interface/FastTrackerRecHitCollection.h"
 #include <string>
 #include <vector>
 namespace edm { class Event; class EventSetup; class ConsumesCollector;}
@@ -53,7 +49,6 @@ private:
 
   edm::ESWatcher<TrackerRecoGeometryRecord> geometryWatcher_;
   edm::ESWatcher<TransientRecHitRecord> trhWatcher_;
-  edm::EDGetTokenT<FastTrackerRecHitCollection> fastSimrecHitsToken_;
   struct LayerSpec { 
     LayerSpec(unsigned short index, const std::string& layerName, const edm::ParameterSet& cfgLayer, edm::ConsumesCollector& iC);
     ~LayerSpec() = default;
@@ -79,6 +74,7 @@ private:
   std::vector<const DetLayer *> theLayerDets;
   std::vector<const TransientTrackingRecHitBuilder *> theTTRHBuilders;
   std::vector<LayerSpec> theLayers;
+  bool isFastSim;
 };
 
 #endif
