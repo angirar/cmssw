@@ -1,4 +1,4 @@
-#include "CellularAutomaton.h"
+#include "RecoPixelVertexing/PixelTriplets/interface/CellularAutomaton.h"
 
 #include<queue>
 

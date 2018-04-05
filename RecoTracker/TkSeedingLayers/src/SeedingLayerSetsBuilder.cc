@@ -6,11 +6,9 @@
 
 #include "RecoTracker/TkDetLayers/interface/GeometricSearchTracker.h"
 #include "RecoTracker/Record/interface/TrackerRecoGeometryRecord.h"
-
 #include "TrackingTools/Records/interface/TransientRecHitRecord.h"
 #include "TrackingTools/TransientTrackingRecHit/interface/TransientTrackingRecHit.h"
 #include "RecoTracker/TransientTrackingRecHit/interface/TkTransientTrackingRecHitBuilder.h"
-
 #include "TrackingTools/DetLayers/interface/BarrelDetLayer.h"
 #include "TrackingTools/DetLayers/interface/ForwardDetLayer.h"
 
@@ -184,8 +182,9 @@ SeedingLayerSetsBuilder::SeedingLayerSetsBuilder(const edm::ParameterSet & cfg, 
 SeedingLayerSetsBuilder::SeedingLayerSetsBuilder(const edm::ParameterSet & cfg, edm::ConsumesCollector& iC)
 {
   std::vector<std::string> namesPset = cfg.getParameter<std::vector<std::string> >("layerList");
+  isFastSim = cfg.getParameter<bool>("isFastSim");
   std::vector<std::vector<std::string> > layerNamesInSets = this->layerNamesInSets(namesPset);
-
+  
   // debug printout of layers
   typedef std::vector<std::string>::const_iterator IS;
   typedef std::vector<std::vector<std::string> >::const_iterator IT;
@@ -369,9 +368,13 @@ std::unique_ptr<SeedingLayerSetsHits> SeedingLayerSetsBuilder::hits(const edm::E
                                                     &theLayerNames,
                                                     &theLayerDets);
 
-  for(auto& layer: theLayers) {
+  if(isFastSim)
+    return ret;
+
+  for(auto& layer: theLayers){
     ret->addHits(layer.nameIndex, layer.extractor->hits((const TkTransientTrackingRecHitBuilder &)(*theTTRHBuilders[layer.nameIndex]), ev, es));
   }
+
   ret->shrink_to_fit();
   return ret;
 }

@@ -1,5 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
+from Configuration.Eras.Modifier_trackingPhase1_cff import trackingPhase1
 # Do not change the order of the interaction models unless you know what you are doing.
 # Not used at the moment: "muonBremsstrahlung", "nuclearInteractionFTF"
 #_trackerMaterialInteractionModels = cms.untracked.vstring("trackerSimHits")
@@ -71,6 +72,15 @@ TrackerMaterialBlock = cms.PSet(
                 activeLayer = cms.untracked.string("BPix3"),
                 interactionModels = _trackerMaterialInteractionModels
             ),
+            #PIXB4                                                                                                                                            
+            cms.PSet(
+                #radius = cms.untracked.double(16),                                                                                                                
+                limits = cms.untracked.vdouble(0.0, 28.391),
+                thickness = cms.untracked.vdouble(0.0217),
+                activeLayer = cms.untracked.string("BPix4"),
+                interactionModels = _trackerMaterialInteractionModels
+            ),
+
             ########### Pixel Outside walls and cables (barrel) ###########
             #PIXBOut5
             cms.PSet(
@@ -179,6 +189,7 @@ TrackerMaterialBlock = cms.PSet(
                 interactionModels = _trackerMaterialInteractionModels
             ),
         ),
+       
 
         EndcapLayers = cms.VPSet(
             ########### Pixel Barrel Outside walls and cables (endcap) ###########
@@ -211,6 +222,14 @@ TrackerMaterialBlock = cms.PSet(
                 activeLayer = cms.untracked.string("FPix2"),
                 interactionModels = _trackerMaterialInteractionModels
             ),
+            #PIXD3                                                                                                                                                   
+            cms.PSet(
+                limits = cms.untracked.vdouble(4.823, 16.598),
+                thickness = cms.untracked.vdouble(0.058),
+                activeLayer = cms.untracked.string("FPix3"),
+                interactionModels = _trackerMaterialInteractionModels
+            ),
+            
             ########### Pixel Endcap outside cables ###########
             #PIXBOut6
             cms.PSet(
@@ -349,5 +368,27 @@ TrackerMaterialBlock = cms.PSet(
             ),
         )
     )
-    
-    
+
+"""
+trackingPhase1.toModify(TrackerMaterialBlock, TrackerMaterial = dict(
+        BarrelLayer = cms.VPSet(
+        #PIXB4                                                                                
+        cms.PSet(
+            #radius = cms.untracked.double(16),                                                             
+            limits = cms.untracked.vdouble(0.0, 28.391),
+            thickness = cms.untracked.vdouble(0.0217),
+            activeLayer = cms.untracked.string("BPix4"),
+            interactionModels = _trackerMaterialInteractionModels
+            ),
+        ),
+        EndcapLayers = cms.VPSet(
+        #PIXD3                                                                                                  
+        cms.PSet(
+            limits = cms.untracked.vdouble(4.823, 16.598),
+            thickness = cms.untracked.vdouble(0.058),
+            activeLayer = cms.untracked.string("FPix3"),
+            interactionModels = _trackerMaterialInteractionModels
+            ),
+        ),
+        ))
+"""
