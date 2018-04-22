@@ -8,12 +8,15 @@
 // track reco
 #include "RecoTracker/MeasurementDet/interface/MeasurementTracker.h"
 #include "RecoTracker/TkHitPairs/interface/RecHitsSortedInPhi.h"
-#include "RecoTracker/TkHitPairs/interface/HitPairGeneratorFromLayerPair.h"
+#include "DataFormats/SiPixelDetId/interface/PixelSubdetector.h"
 #include "RecoTracker/TkSeedGenerator/interface/MultiHitGeneratorFromPairAndLayers.h"
 #include "RecoTracker/TkSeedGenerator/interface/MultiHitGeneratorFromPairAndLayersFactory.h"
 #include "RecoTracker/Record/interface/CkfComponentsRecord.h"
 #include "RecoPixelVertexing/PixelTriplets/interface/HitTripletGeneratorFromPairAndLayers.h"
 #include "RecoPixelVertexing/PixelTriplets/interface/HitTripletGeneratorFromPairAndLayersFactory.h"
+#include "RecoPixelVertexing/PixelTriplets/interface/CAHitTripletGenerator.h"
+#include "RecoPixelVertexing/PixelTriplets/interface/CAHitQuadrupletGenerator.h"
+#include "RecoPixelVertexing/PixelTriplets/interface/OrderedHitSeeds.h"
 
 // data formats
 #include "DataFormats/TrackerRecHit2D/interface/FastTrackerRecHit.h"
@@ -23,6 +26,12 @@ SeedFinderSelector::SeedFinderSelector(const edm::ParameterSet & cfg,edm::Consum
     , eventSetup_(nullptr)
     , measurementTracker_(nullptr)
     , measurementTrackerLabel_(cfg.getParameter<std::string>("measurementTracker"))
+      //    , parameterSet_(cfg)
+    // , layerList(parameterSet_.getParameter<std::vector<std::string>>("layerList"))
+    // , isFastSim(parameterSet_.getParameter<bool>("isFastSim"))
+    // , layerPairs(parameterSet_.getParameter<std::vector<unsigned>>("layerPairs"))
+    // , BPix(parameterSet_.getParameter<edm::ParameterSetDescription>("BPix"))
+    // , FPix(parameterSet_.getParameter<edm::ParameterSetDescription>("FPix"))
 {
     if(cfg.exists("pixelTripletGeneratorFactory"))
     {
@@ -36,10 +45,28 @@ SeedFinderSelector::SeedFinderSelector(const edm::ParameterSet & cfg,edm::Consum
         multiHitGenerator_.reset(MultiHitGeneratorFromPairAndLayersFactory::get()->create(tripletConfig.getParameter<std::string>("ComponentName"),tripletConfig));
     }
 
-    if(pixelTripletGenerator_ && multiHitGenerator_)
+    if(cfg.exists("CAHitTripletGeneratorFactory"))
     {
-	throw cms::Exception("FastSimTracking") << "It is forbidden to specify both 'pixelTripletGeneratorFactory' and 'MultiHitGeneratorFactory' in configuration of SeedFinderSelection";
+        const edm::ParameterSet & tripletConfig = cfg.getParameter<edm::ParameterSet>("CAHitTripletGeneratorFactory");
+	CAHitTriplGenerator_ = std::make_unique<CAHitTripletGenerator>(tripletConfig,consumesCollector);
     }
+
+    if(cfg.exists("CAHitQuadrupletGeneratorFactory"))
+    {
+        const edm::ParameterSet & quadrupletConfig = cfg.getParameter<edm::ParameterSet>("CAHitQuadrupletGeneratorFactory");
+	CAHitQuadGenerator_ = std::make_unique<CAHitQuadrupletGenerator>(quadrupletConfig, consumesCollector);
+	seedingLayers_ = std::make_unique<SeedingLayerSetsBuilder>(quadrupletConfig, consumesCollector);
+	layerPairs_ = quadrupletConfig.getParameter<std::vector<unsigned>>("layerPairs");
+    }
+
+    if((pixelTripletGenerator_ && multiHitGenerator_) || (CAHitQuadGenerator_ && pixelTripletGenerator_) || (CAHitTriplGenerator_ && multiHitGenerator_))
+      {
+	throw cms::Exception("FastSimTracking") << "It is forbidden to specify together 'pixelTripletGeneratorFactory', 'CAHitTripletGeneratorFactory' and 'MultiHitGeneratorFactory' in configuration of SeedFinderSelection";
+      }
+    if((pixelTripletGenerator_ && CAHitQuadGenerator_) || (CAHitTriplGenerator_ && CAHitQuadGenerator_) || (CAHitQuadGenerator_ && multiHitGenerator_))
+      {
+	throw cms::Exception("FastSimTracking") << "It is forbidden to specify 'CAHitQuadrupletGeneratorFactory' together with 'pixelTripletGeneratorFactory', 'CAHitTripletGeneratorFactory' or 'MultiHitGeneratorFactory' in configuration of SeedFinderSelection";
+      }  
 }
 
 
@@ -48,15 +75,22 @@ SeedFinderSelector::~SeedFinderSelector(){;}
 void SeedFinderSelector::initEvent(const edm::Event & ev,const edm::EventSetup & es)
 {
     eventSetup_ = &es;
-    
+     
     edm::ESHandle<MeasurementTracker> measurementTrackerHandle;
     es.get<CkfComponentsRecord>().get(measurementTrackerLabel_, measurementTrackerHandle);
+    es.get<TrackerTopologyRcd>().get(trackerTopology);
     measurementTracker_ = &(*measurementTrackerHandle);
 
     if(multiHitGenerator_)
     {
         multiHitGenerator_->initES(es);
     }
+
+    if(CAHitQuadGenerator_){
+      seedingLayer = seedingLayers_->makeSeedingLayerSetsHitsforFastSim(ev, es);
+      seedingLayerIds = seedingLayers_->layers();
+      CAHitQuadGenerator_->initEvent(ev,es);
+    }    
 }
 
 
@@ -80,8 +114,8 @@ bool SeedFinderSelector::pass(const std::vector<const FastTrackerRecHit *>& hits
     const DetLayer * firstLayer = measurementTracker_->geometricSearchTracker()->detLayer(hits[0]->det()->geographicalId());
     const DetLayer * secondLayer = measurementTracker_->geometricSearchTracker()->detLayer(hits[1]->det()->geographicalId());
     
-    std::vector<BaseTrackerRecHit const *> firstHits(1,static_cast<const BaseTrackerRecHit*>(hits[0]));
-    std::vector<BaseTrackerRecHit const *> secondHits(1,static_cast<const BaseTrackerRecHit*>(hits[1]));
+    std::vector<BaseTrackerRecHit const *> firstHits{hits[0]};
+    std::vector<BaseTrackerRecHit const *> secondHits{hits[1]};
     
     const RecHitsSortedInPhi fhm(firstHits, trackingRegion_->origin(), firstLayer);
     const RecHitsSortedInPhi shm(secondHits, trackingRegion_->origin(), secondLayer);
@@ -95,7 +129,7 @@ bool SeedFinderSelector::pass(const std::vector<const FastTrackerRecHit *>& hits
     }
     
     // check the inner 3 hits
-    if(pixelTripletGenerator_ || multiHitGenerator_)
+    if(pixelTripletGenerator_ || multiHitGenerator_ || CAHitTriplGenerator_)
     {
 	if(hits.size() < 3)
 	{
@@ -103,8 +137,8 @@ bool SeedFinderSelector::pass(const std::vector<const FastTrackerRecHit *>& hits
 	}
 	const DetLayer * thirdLayer = measurementTracker_->geometricSearchTracker()->detLayer(hits[2]->det()->geographicalId());
 	std::vector<const DetLayer *> thirdLayerDetLayer(1,thirdLayer);
-	std::vector<BaseTrackerRecHit const *> thirdHits(1,static_cast<const BaseTrackerRecHit*>(hits[2]));
-	const RecHitsSortedInPhi thm(thirdHits,trackingRegion_->origin(), thirdLayer);
+	std::vector<BaseTrackerRecHit const *> thirdHits{hits[2]};
+      	const RecHitsSortedInPhi thm(thirdHits,trackingRegion_->origin(), thirdLayer);
 	const RecHitsSortedInPhi * thmp =&thm;
 	
 	if(pixelTripletGenerator_)
@@ -119,8 +153,89 @@ bool SeedFinderSelector::pass(const std::vector<const FastTrackerRecHit *>& hits
 	    multiHitGenerator_->hitTriplets(*trackingRegion_,tripletresult,*eventSetup_,result,&thmp,thirdLayerDetLayer,1);
 	    return !tripletresult.empty();
 	}
-
+	else if(CAHitTriplGenerator_)
+	{  
+	    return true;
+	}
     }
+    
+    if(CAHitQuadGenerator_)
+    {
+      if(hits.size() < 4)
+	{
+	  throw cms::Exception("FastSimTracking") << "For the given configuration, SeedFinderSelector::pass requires at least 4 hits";
+	}
+
+      if(!seedingLayer)
+	throw cms::Exception("FastSimTracking") << "ERROR: SeedingLayers pointer not set";      
+
+      SeedingLayerSetsHits & layers = *seedingLayer;
+      IntermediateHitDoublets ihd(&layers);
+      const TrackingRegion& tr_ = *trackingRegion_;
+      auto filler = ihd.beginRegion(&tr_);
+      
+      std::array<SeedingLayerSetsBuilder::SeedingLayerId,2> hitPair;
+      for(int i=0; i<3; i++){
+	SeedingLayerSetsHits::SeedingLayerSet pairCandidate;
+	hitPair[0] = Layer_tuple(hits[i]);
+ 	hitPair[1] = Layer_tuple(hits[i+1]);
+       
+	bool found;
+        for(SeedingLayerSetsHits::SeedingLayerSet ls : *seedingLayer){
+	  found = false;
+	  for(const auto p : layerPairs_){
+	    pairCandidate = ls.slice(p,p+2);
+	    if(hitPair[0] == seedingLayerIds[pairCandidate[0].index()] && hitPair[1] == seedingLayerIds[pairCandidate[1].index()]){
+	      found = true;
+	      break;
+	    }
+	  }
+	  if(found)
+	    break;
+	}
+	assert(found == true);
+	const DetLayer * fLayer = measurementTracker_->geometricSearchTracker()->detLayer(hits[i]->det()->geographicalId());
+	const DetLayer * sLayer = measurementTracker_->geometricSearchTracker()->detLayer(hits[i+1]->det()->geographicalId());
+	std::vector<BaseTrackerRecHit const *> fHits{hits[i]};
+	std::vector<BaseTrackerRecHit const *> sHits{hits[i+1]};
+
+	const RecHitsSortedInPhi firsthm(fHits, trackingRegion_->origin(), fLayer);
+	const RecHitsSortedInPhi secondhm(sHits, trackingRegion_->origin(), sLayer);
+	HitDoublets res(firsthm,secondhm);
+	HitPairGeneratorFromLayerPair::doublets(*trackingRegion_,*fLayer,*sLayer,firsthm,secondhm,*eventSetup_,0,res);
+	filler.addDoublets(pairCandidate, std::move(res));
+      }
+      std::vector<OrderedHitSeeds> quadrupletresult;
+      CAHitQuadGenerator_->hitNtuplets(ihd,quadrupletresult,*eventSetup_,*seedingLayer);
+      //      std::cout<<"quadrupletresult.size()="<<quadrupletresult.size()<<std::endl;
+      return !quadrupletresult.empty();  
+    }    
+
     return true;
     
+}
+
+SeedingLayerSetsBuilder::SeedingLayerId SeedFinderSelector::Layer_tuple(const FastTrackerRecHit * hit) const
+{
+  const TrackerTopology* const tTopo = trackerTopology.product();
+  GeomDetEnumerators::SubDetector subdet = GeomDetEnumerators::invalidDet;
+  TrackerDetSide side = TrackerDetSide::Barrel;
+  int idLayer = 0;
+  
+  if( (hit->det()->geographicalId()).subdetId() == PixelSubdetector::PixelBarrel){
+    subdet = GeomDetEnumerators::PixelBarrel;
+    side = TrackerDetSide::Barrel;
+    idLayer = tTopo->pxbLayer(hit->det()->geographicalId());
+  }
+  else if ((hit->det()->geographicalId()).subdetId() == PixelSubdetector::PixelEndcap){
+    subdet = GeomDetEnumerators::PixelEndcap;
+    idLayer = tTopo->pxfDisk(hit->det()->geographicalId());
+    if(tTopo->pxfSide(hit->det()->geographicalId())==1){
+      side = TrackerDetSide::NegEndcap;
+    }
+    else{
+      side = TrackerDetSide::PosEndcap;
+    }
+  }
+  return std::make_tuple(subdet, side, idLayer);
 }

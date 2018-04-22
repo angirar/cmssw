@@ -51,6 +51,7 @@ from RecoTracker.TkSeedGenerator.seedCreatorFromRegionConsecutiveHitsEDProducer_
 initialStepSeeds = _seedCreatorFromRegionConsecutiveHitsEDProducer.clone(
     seedingHitSets = "initialStepHitTriplets",
 )
+trackingPhase1.toModify(initialStepHitDoublets, layerPairs = [0,1,2]) # layer pairs (0,1), (1,2), (2,3)
 from RecoPixelVertexing.PixelTriplets.caHitQuadrupletEDProducer_cfi import caHitQuadrupletEDProducer as _caHitQuadrupletEDProducer
 _initialStepCAHitQuadruplets = _caHitQuadrupletEDProducer.clone(
     doublets = "initialStepHitDoublets",
@@ -65,9 +66,21 @@ _initialStepCAHitQuadruplets = _caHitQuadrupletEDProducer.clone(
     fitFastCircleChi2Cut = True,
     CAThetaCut = 0.0012,
     CAPhiCut = 0.2,
+    layerList = initialStepSeedLayers.layerList.value(),
+    BPix = cms.PSet(
+        TTRHBuilder = cms.string('WithoutRefit'),
+        HitProducer = cms.string('TrackingRecHitProducer'),
+        ),
+    FPix = cms.PSet(
+        TTRHBuilder = cms.string('WithoutRefit'),
+        HitProducer = cms.string('TrackingRecHitProducer'),
+        ),
+    layerPairs = initialStepHitDoublets.layerPairs.value(),
 )
+(trackingPhase1 & fastSim).toModify(_initialStepCAHitQuadruplets, isFastSim = True)
+
 initialStepHitQuadruplets = _initialStepCAHitQuadruplets.clone()
-trackingPhase1.toModify(initialStepHitDoublets, layerPairs = [0,1,2]) # layer pairs (0,1), (1,2), (2,3)
+#trackingPhase1.toModify(initialStepHitDoublets, layerPairs = [0,1,2]) # layer pairs (0,1), (1,2), (2,3)
 
 trackingPhase2PU140.toModify(initialStepHitDoublets, layerPairs = [0,1,2]) # layer pairs (0,1), (1,2), (2,3)
 trackingPhase2PU140.toModify(initialStepHitQuadruplets,
@@ -101,6 +114,22 @@ _fastSim_initialStepSeeds = FastSimulation.Tracking.TrajectorySeedProducer_cfi.t
     seedFinderSelector = dict( pixelTripletGeneratorFactory = _hitSetProducerToFactoryPSet(initialStepHitTriplets))
 )
 _fastSim_initialStepSeeds.seedFinderSelector.pixelTripletGeneratorFactory.SeedComparitorPSet.ComponentName = "none"
+trackingPhase1.toModify(_fastSim_initialStepSeeds, seedFinderSelector = dict(
+#        dict(layerList = initialStepSeedLayers.layerList.value(),
+#             BPix = cms.PSet(
+#                TTRHBuilder = cms.string('WithoutRefit'),
+#                HitProducer = cms.string('TrackingRecHitProducer'),
+#                ),
+#             FPix = cms.PSet(
+#                TTRHBuilder = cms.string('WithoutRefit'),
+#                HitProducer = cms.string('TrackingRecHitProducer'),
+#                ),
+#             layerPairs = initialStepHitDoublets.layerPairs.value(),
+#             isFastSim = True
+#             ),
+        pixelTripletGeneratorFactory = None,
+        CAHitQuadrupletGeneratorFactory = _hitSetProducerToFactoryPSet(initialStepHitQuadruplets).clone(dict( SeedComparitorPSet = dict(ComponentName = "none"))))
+)
 fastSim.toReplaceWith(initialStepSeeds,_fastSim_initialStepSeeds)
 
 
