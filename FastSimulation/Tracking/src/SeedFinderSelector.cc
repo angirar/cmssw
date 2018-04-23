@@ -199,15 +199,22 @@ bool SeedFinderSelector::pass(const std::vector<const FastTrackerRecHit *>& hits
 	std::vector<BaseTrackerRecHit const *> fHits{hits[i]};
 	std::vector<BaseTrackerRecHit const *> sHits{hits[i+1]};
 
-	const RecHitsSortedInPhi firsthm(fHits, trackingRegion_->origin(), fLayer);
-	const RecHitsSortedInPhi secondhm(sHits, trackingRegion_->origin(), sLayer);
+	auto& layerCache = filler.layerHitMapCache();
+	const RecHitsSortedInPhi& firsthm = *layerCache.add(pairCandidate[0], std::make_unique<RecHitsSortedInPhi>(fHits, trackingRegion_->origin(), fLayer));
+	const RecHitsSortedInPhi& secondhm = *layerCache.add(pairCandidate[1], std::make_unique<RecHitsSortedInPhi>(sHits, trackingRegion_->origin(), sLayer));
+
+	// const RecHitsSortedInPhi firsthm(fHits, trackingRegion_->origin(), fLayer);
+	// const RecHitsSortedInPhi secondhm(sHits, trackingRegion_->origin(), sLayer);
+
 	HitDoublets res(firsthm,secondhm);
 	HitPairGeneratorFromLayerPair::doublets(*trackingRegion_,*fLayer,*sLayer,firsthm,secondhm,*eventSetup_,0,res);
 	filler.addDoublets(pairCandidate, std::move(res));
       }
       std::vector<OrderedHitSeeds> quadrupletresult;
+      quadrupletresult.reserve(1);
+      quadrupletresult.clear();
       CAHitQuadGenerator_->hitNtuplets(ihd,quadrupletresult,*eventSetup_,*seedingLayer);
-      //      std::cout<<"quadrupletresult.size()="<<quadrupletresult.size()<<std::endl;
+      std::cout<<"quadrupletresult.size()="<<quadrupletresult.size()<<std::endl;
       return !quadrupletresult.empty();  
     }    
 
