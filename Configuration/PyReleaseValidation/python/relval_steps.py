@@ -365,6 +365,7 @@ steps['RunExpressPhy2017F']={'INPUT':InputInfo(dataSet='/ExpressPhysics/Run2017F
 
 steps['RunJetHT2017F_reminiaod']={'INPUT':InputInfo(dataSet='/JetHT/Run2017F-17Nov2017-v1/AOD',label='rmaod_jetHT2017F',events=100000,location='STD', ls=Run2017F)}
 
+steps['RunJetHT2017C_94Xv2NanoAODINPUT']={'INPUT':InputInfo(dataSet='/JetHT/CMSSW_9_4_5_cand1-94X_dataRun2_relval_v11_RelVal_rmaod_jetHT2017C-v1/MINIAOD',label='nano_jetHT2017C',events=100000,location='STD', ls=Run2017C)}
 
 # Highstat HLTPhysics
 Run2015DHS=selectedLS([258712,258713,258714,258741,258742,258745,258749,258750,259626,259637,259683,259685,259686,259721,259809,259810,259818,259820,259821,259822,259862,259890,259891])
@@ -507,7 +508,7 @@ steps['TTbar_13_ID']=identitySim(steps['TTbar_13'])
 
 baseDataSetRelease=[
     'CMSSW_9_2_4-91X_mcRun1_realistic_v2-v1',               # 0 run1 samples; note TTbar GENSIM has v2 (see TTbarINPUT below)
-    'CMSSW_10_1_0_pre3-101X_upgrade2018_realistic_v3-v1',          # 1 GEN-SIM for HI RunII, 2018
+    'CMSSW_10_1_0-101X_upgrade2018_realistic_v6_resub-v1',          # 1 GEN-SIM for HI RunII, 2018
     'CMSSW_6_2_0_pre8-PRE_ST62_V8_FastSim-v1',              # 2 for fastsim id test
 #    'CMSSW_7_1_0_pre5-START71_V1-v2',                      # 3 8 TeV , for the one sample which is part of the routine relval production (RelValZmumuJets_Pt_20_300, because of -v2)
                                                             # THIS ABOVE IS NOT USED, AT THE MOMENT
@@ -515,16 +516,16 @@ baseDataSetRelease=[
     'CMSSW_7_3_0_pre1-PRE_LS172_V15_FastSim-v1',                   # 4 - fast sim GEN-SIM-DIGI-RAW-HLTDEBUG for id tests
     'CMSSW_9_0_0_pre4-PU25ns_90X_mcRun2_asymptotic_v1-v1',    # 5 - fullSim PU 25ns UP15 premix
     'CMSSW_8_1_0_pre15-PU50ns_81X_mcRun2_startup_v12-v1',        # 6 - fullSim PU 50ns UP15 premix
-    'CMSSW_10_1_0_pre3-101X_mcRun2_asymptotic_v2_FastSim-v1',    # 7 - fastSim MinBias for mixing
-    'CMSSW_10_1_0_pre3-PU25ns_101X_mcRun2_asymptotic_v2_FastSim-v1',# 8 - fastSim premixed MinBias
-    'CMSSW_10_1_0_pre3-101X_upgrade2018_realistic_v3-v1',        # 9 - Run2 HI GEN-SIM for mixing
+    'CMSSW_10_1_0-101X_mcRun2_asymptotic_v3_resub_FastSim-v1',    # 7 - fastSim MinBias for mixing
+    'CMSSW_10_1_0-PU25ns_101X_mcRun2_asymptotic_v3_FastSim-v1',# 8 - fastSim premixed MinBias
+    'CMSSW_10_1_0-101X_upgrade2018_realistic_v6_resub-v1',        # 9 - Run2 HI GEN-SIM for mixing
     'CMSSW_7_6_0-76X_mcRun2_asymptotic_v11-v1',                    # 10 - 13 TeV High Stats GEN-SIM
     'CMSSW_7_6_0_pre7-76X_mcRun2_asymptotic_v9_realBS-v1',         # 11 - 13 TeV High Stats MiniBias for mixing GEN-SIM
     'CMSSW_8_1_0_pre9_Geant4102-81X_mcRun2cosmics_startup_peak_v2-v1', # 12 - GEN-SIM input for 1307 cosmics wf from 810_p2
     'CMSSW_10_0_0_pre2-100X_mc2017_realistic_v1-v1',     # 13 - 13 TeV samples with GEN-SIM from PhaseI upgrade
     'CMSSW_10_0_0_pre2-PU25ns_100X_mc2017_realistic_v1-v1',     # 14 - fullSim PU 25ns UP17 premix
-    'CMSSW_10_1_0_pre3-PU25ns_101X_upgrade2018_realistic_v3-v1',  #15 - fullSim PU 25ns UP18 premix
-    'CMSSW_10_1_0_pre3-101X_upgrade2018_realistic_v3-v1',  #16 - GENSIM input 2018
+    'CMSSW_10_1_0-PU25ns_101X_upgrade2018_realistic_v6-v1',  #15 - fullSim PU 25ns UP18 premix
+    'CMSSW_10_1_0-101X_upgrade2018_realistic_v6_rsb-v1',  #16 - GENSIM input 2018
     ]
 
 
@@ -914,7 +915,6 @@ FS_PREMIXUP15_PU25_OVERLAY = merge([
          "--datamix" : "PreMix",
          "--procModifiers": "premix_stage2",
          "--pileup_input" : "dbs:/RelValFS_PREMIXUP15_PU25/%s/GEN-SIM-DIGI-RAW"%(baseDataSetRelease[8],),
-         "--customise":"SimGeneral/DataMixingModule/customiseForPremixingInput.customiseForPreMixingInput"
          },
         Kby(100,500),step1FastUpg2015Defaults])
 
@@ -1771,17 +1771,17 @@ steps['RECOUP15_PU25HS']=merge([PU25HS,step3Up2015Defaults])
 
 # for premixing: no --pileup_input for replay; GEN-SIM only available for in-time event, from FEVTDEBUGHLT previous step
 steps['RECOPRMXUP15_PU25']=merge([
-        {'--era':'Run2_2016','--customise':'SimGeneral/DataMixingModule/customiseForPremixingInput.customiseForPreMixingInput'}, # temporary replacement for premix; to be brought back to customisePostLS1; DataMixer customize for rerouting inputs to mixed data.
+        {'--era':'Run2_2016','--procModifiers':'premix_stage2'}, # temporary replacement for premix; to be brought back to customisePostLS1; DataMixer customize for rerouting inputs to mixed data.
         step3Up2015Defaults])
 steps['RECOPRMXUP15_PU50']=merge([
-        {'--era':'Run2_50ns','--customise':'SimGeneral/DataMixingModule/customiseForPremixingInput.customiseForPreMixingInput'},
+        {'--era':'Run2_50ns','--procModifiers':'premix_stage2'},
         step3Up2015Defaults50ns])
 steps['RECOPRMXUP17_PU25']=merge([
-        {'--conditions':'auto:phase1_2017_realistic','--era':'Run2_2017','--customise':'SimGeneral/DataMixingModule/customiseForPremixingInput.customiseForPreMixingInput'},
+        {'--conditions':'auto:phase1_2017_realistic','--era':'Run2_2017','--procModifiers':'premix_stage2'},
         step3Up2015Defaults])
 
 steps['RECOPRMXUP18_PU25']=merge([
-        {'--conditions':'auto:phase1_2018_realistic','--era':'Run2_2018','--customise':'SimGeneral/DataMixingModule/customiseForPremixingInput.customiseForPreMixingInput'},
+        {'--conditions':'auto:phase1_2018_realistic','--era':'Run2_2018','--procModifiers':'premix_stage2'},
         step3Up2015Defaults])
 steps['RECOPRMXUP18_PU25_L1TEgDQM']=merge([{'-s':'RAW2DIGI,L1Reco,RECO,RECOSIM,EI,PAT,VALIDATION:@standardValidation+@miniAODValidation,DQM:@standardDQM+@ExtraHLT+@miniAODDQM+@L1TEgamma'},steps['RECOPRMXUP18_PU25']])
 steps['RECOPRMXUP18_PU25_L1TMuDQM']=merge([{'-s':'RAW2DIGI,L1Reco,RECO,RECOSIM,EI,PAT,VALIDATION:@standardValidation+@miniAODValidation,DQM:@standardDQM+@ExtraHLT+@miniAODDQM+@L1TMuon'},steps['RECOPRMXUP18_PU25']])
@@ -2017,6 +2017,7 @@ steps['DQMHLTonRAWAOD_2017']={
     '--era':'Run2_2017',
     '--secondfilein':'filelist:step1_dasparentquery.log',
     '--customise_commands':'"process.HLTAnalyzerEndpath.remove(process.hltL1TGlobalSummary)"',
+    '--fileout':'DQMHLTonAOD.root',
     }
 
 steps['HARVESTDQMHLTonAOD_2017'] = merge([ {'--filein':'file:DQMHLTonAOD.root','-s':'HARVESTING:hltOfflineDQMClient'}, steps['HARVEST2017'] ]) ### Harvesting step for the DQM-only workflow
@@ -2358,8 +2359,8 @@ from  Configuration.PyReleaseValidation.upgradeWorkflowComponents import *
 defaultDataSets={}
 defaultDataSets['2017']='CMSSW_10_0_0_pre2-100X_mc2017_realistic_v1-v'
 defaultDataSets['2017Design']='CMSSW_10_0_0_pre2-100X_mc2017_design_IdealBS_v1-v'
-defaultDataSets['2018']='CMSSW_10_1_0_pre3-101X_upgrade2018_realistic_v3-v'
-defaultDataSets['2018Design']='CMSSW_10_1_0_pre3-101X_upgrade2018_design_v4-v'
+defaultDataSets['2018']='CMSSW_10_1_0-101X_upgrade2018_realistic_v6_rsb-v'
+defaultDataSets['2018Design']='CMSSW_10_1_0-101X_upgrade2018_design_v7_resub-v'
 #defaultDataSets['2019']=''
 #defaultDataSets['2019Design']=''
 defaultDataSets['2023D17']='CMSSW_9_3_2-93X_upgrade2023_realistic_v2_2023D17noPU-v'
@@ -2645,11 +2646,10 @@ for year,k in [(year,k) for year in upgradeKeys for k in upgradeKeys[year]]:
                                     "--procModifiers": "premix_stage2"},
                                    d])
                     elif "Reco" in step:
-                        custNew = "SimGeneral/DataMixingModule/customiseForPremixingInput.customiseForPreMixingInput"
-                        if "--customise" in d:
-                            d["--customise"] += ","+custNew
+                        if "--procModifiers" in d:
+                            d["--procModifiers"] += ",premix_stage2"
                         else:
-                            d["--customise"] = custNew
+                            d["--procModifiers"] = "premix_stage2"
                     upgradeStepDict[stepNamePUpmx][k] = d
 
 for step in upgradeStepDict.keys():
