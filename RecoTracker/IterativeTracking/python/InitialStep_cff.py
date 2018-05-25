@@ -29,11 +29,6 @@ initialStepTrackingRegions = _globalTrackingRegionFromBeamSpot.clone(RegionPSet 
 ))
 from Configuration.Eras.Modifier_trackingPhase2PU140_cff import trackingPhase2PU140
 trackingPhase1.toModify(initialStepTrackingRegions, RegionPSet = dict(ptMin = 0.5))
-from Configuration.Eras.Modifier_highBetaStar_2018_cff import highBetaStar_2018
-highBetaStar_2018.toModify(initialStepTrackingRegions,RegionPSet = dict(
-     ptMin = 0.05,
-     originRadius = 0.2
-))
 trackingPhase2PU140.toModify(initialStepTrackingRegions, RegionPSet = dict(ptMin = 0.6,originRadius = 0.03))
 
 # seeding
@@ -56,6 +51,7 @@ from RecoTracker.TkSeedGenerator.seedCreatorFromRegionConsecutiveHitsEDProducer_
 initialStepSeeds = _seedCreatorFromRegionConsecutiveHitsEDProducer.clone(
     seedingHitSets = "initialStepHitTriplets",
 )
+trackingPhase1.toModify(initialStepHitDoublets, layerPairs = [0,1,2]) # layer pairs (0,1), (1,2), (2,3)
 from RecoPixelVertexing.PixelTriplets.caHitQuadrupletEDProducer_cfi import caHitQuadrupletEDProducer as _caHitQuadrupletEDProducer
 _initialStepCAHitQuadruplets = _caHitQuadrupletEDProducer.clone(
     doublets = "initialStepHitDoublets",
@@ -70,14 +66,21 @@ _initialStepCAHitQuadruplets = _caHitQuadrupletEDProducer.clone(
     fitFastCircleChi2Cut = True,
     CAThetaCut = 0.0012,
     CAPhiCut = 0.2,
+    layerList = initialStepSeedLayers.layerList.value(),
+    BPix = cms.PSet(
+        TTRHBuilder = cms.string('WithoutRefit'),
+        HitProducer = cms.string('TrackingRecHitProducer'),
+        ),
+    FPix = cms.PSet(
+        TTRHBuilder = cms.string('WithoutRefit'),
+        HitProducer = cms.string('TrackingRecHitProducer'),
+        ),
+    layerPairs = initialStepHitDoublets.layerPairs.value(),
 )
-highBetaStar_2018.toModify(_initialStepCAHitQuadruplets,
-    CAThetaCut = 0.0024,
-    CAPhiCut = 0.4
-)
-initialStepHitQuadruplets = _initialStepCAHitQuadruplets.clone()
+(trackingPhase1 & fastSim).toModify(_initialStepCAHitQuadruplets, isFastSim = True)
 
-trackingPhase1.toModify(initialStepHitDoublets, layerPairs = [0,1,2]) # layer pairs (0,1), (1,2), (2,3)
+initialStepHitQuadruplets = _initialStepCAHitQuadruplets.clone()
+#trackingPhase1.toModify(initialStepHitDoublets, layerPairs = [0,1,2]) # layer pairs (0,1), (1,2), (2,3)
 
 trackingPhase2PU140.toModify(initialStepHitDoublets, layerPairs = [0,1,2]) # layer pairs (0,1), (1,2), (2,3)
 trackingPhase2PU140.toModify(initialStepHitQuadruplets,
@@ -111,6 +114,22 @@ _fastSim_initialStepSeeds = FastSimulation.Tracking.TrajectorySeedProducer_cfi.t
     seedFinderSelector = dict( pixelTripletGeneratorFactory = _hitSetProducerToFactoryPSet(initialStepHitTriplets))
 )
 _fastSim_initialStepSeeds.seedFinderSelector.pixelTripletGeneratorFactory.SeedComparitorPSet.ComponentName = "none"
+trackingPhase1.toModify(_fastSim_initialStepSeeds, seedFinderSelector = dict(
+#        dict(layerList = initialStepSeedLayers.layerList.value(),
+#             BPix = cms.PSet(
+#                TTRHBuilder = cms.string('WithoutRefit'),
+#                HitProducer = cms.string('TrackingRecHitProducer'),
+#                ),
+#             FPix = cms.PSet(
+#                TTRHBuilder = cms.string('WithoutRefit'),
+#                HitProducer = cms.string('TrackingRecHitProducer'),
+#                ),
+#             layerPairs = initialStepHitDoublets.layerPairs.value(),
+#             isFastSim = True
+#             ),
+        pixelTripletGeneratorFactory = None,
+        CAHitQuadrupletGeneratorFactory = _hitSetProducerToFactoryPSet(initialStepHitQuadruplets).clone(dict( SeedComparitorPSet = dict(ComponentName = "none"))))
+)
 fastSim.toReplaceWith(initialStepSeeds,_fastSim_initialStepSeeds)
 
 
@@ -131,7 +150,6 @@ from Configuration.Eras.Modifier_pp_on_XeXe_2017_cff import pp_on_XeXe_2017
 from Configuration.Eras.Modifier_pp_on_AA_2018_cff import pp_on_AA_2018
 for e in [pp_on_XeXe_2017, pp_on_AA_2018]:
     e.toModify(initialStepTrajectoryFilterBase, minPt=0.6)
-highBetaStar_2018.toModify(initialStepTrajectoryFilterBase, minPt = 0.05)
 
 initialStepTrajectoryFilterInOut = initialStepTrajectoryFilterBase.clone(
     minimumNumberOfHits = 4,
