@@ -26,7 +26,7 @@ SeedFinderSelector::SeedFinderSelector(const edm::ParameterSet & cfg,edm::Consum
     , eventSetup_(nullptr)
     , measurementTracker_(nullptr)
     , measurementTrackerLabel_(cfg.getParameter<std::string>("measurementTracker"))
-      //    , parameterSet_(cfg)
+    //    , parameterSet_(cfg)
     // , layerList(parameterSet_.getParameter<std::vector<std::string>>("layerList"))
     // , isFastSim(parameterSet_.getParameter<bool>("isFastSim"))
     // , layerPairs(parameterSet_.getParameter<std::vector<unsigned>>("layerPairs"))
@@ -49,6 +49,8 @@ SeedFinderSelector::SeedFinderSelector(const edm::ParameterSet & cfg,edm::Consum
     {
         const edm::ParameterSet & tripletConfig = cfg.getParameter<edm::ParameterSet>("CAHitTripletGeneratorFactory");
 	CAHitTriplGenerator_ = std::make_unique<CAHitTripletGenerator>(tripletConfig,consumesCollector);
+	seedingLayers_ = std::make_unique<SeedingLayerSetsBuilder>(tripletConfig, consumesCollector);
+        layerPairs_ = tripletConfig.getParameter<std::vector<unsigned>>("layerPairs");
     }
 
     if(cfg.exists("CAHitQuadrupletGeneratorFactory"))
@@ -84,6 +86,12 @@ void SeedFinderSelector::initEvent(const edm::Event & ev,const edm::EventSetup &
     if(multiHitGenerator_)
     {
         multiHitGenerator_->initES(es);
+    }
+
+    if(CAHitTriplGenerator_){
+      seedingLayer = seedingLayers_->makeSeedingLayerSetsHitsforFastSim(ev, es);
+      seedingLayerIds = seedingLayers_->layers();
+      CAHitTriplGenerator_->initEvent(ev,es);
     }
 
     if(CAHitQuadGenerator_){
@@ -155,7 +163,49 @@ bool SeedFinderSelector::pass(const std::vector<const FastTrackerRecHit *>& hits
 	}
 	else if(CAHitTriplGenerator_)
 	{  
-	    return true;
+	  if(!seedingLayer)
+	    throw cms::Exception("FastSimTracking") << "ERROR: SeedingLayers pointer not set";
+
+	  SeedingLayerSetsHits & layers = *seedingLayer;
+	  IntermediateHitDoublets ihd(&layers);
+	  const TrackingRegion& tr_ = *trackingRegion_;
+	  auto filler = ihd.beginRegion(&tr_);
+
+	  std::array<SeedingLayerSetsBuilder::SeedingLayerId,2> hitPair;
+	  for(int i=0; i<2; i++){
+	    SeedingLayerSetsHits::SeedingLayerSet pairCandidate;
+	    hitPair[0] = Layer_tuple(hits[i]);
+	    hitPair[1] = Layer_tuple(hits[i+1]);
+
+	    bool found;
+	    for(SeedingLayerSetsHits::SeedingLayerSet ls : *seedingLayer){
+	      found = false;
+	      for(const auto p : layerPairs_){
+		pairCandidate = ls.slice(p,p+2);
+		if(hitPair[0] == seedingLayerIds[pairCandidate[0].index()] && hitPair[1] == seedingLayerIds[pairCandidate[1].index()]){
+		  found = true;
+		  break;
+		}
+	      }
+	      if(found)
+		break;
+	    }
+	    assert(found == true);
+	    const DetLayer * fLayer = measurementTracker_->geometricSearchTracker()->detLayer(hits[i]->det()->geographicalId());
+	    const DetLayer * sLayer = measurementTracker_->geometricSearchTracker()->detLayer(hits[i+1]->det()->geographicalId());
+	    std::vector<BaseTrackerRecHit const *> fHits{hits[i]};
+	    std::vector<BaseTrackerRecHit const *> sHits{hits[i+1]};
+	    
+	    auto& layerCache = filler.layerHitMapCache();
+	    const RecHitsSortedInPhi& firsthm = *layerCache.add(pairCandidate[0], std::make_unique<RecHitsSortedInPhi>(fHits, trackingRegion_->origin(),fLayer));
+	    const RecHitsSortedInPhi& secondhm = *layerCache.add(pairCandidate[1], std::make_unique<RecHitsSortedInPhi>(sHits, trackingRegion_->origin(),sLayer));
+	    HitDoublets res(firsthm,secondhm);
+	    HitPairGeneratorFromLayerPair::doublets(*trackingRegion_,*fLayer,*sLayer,firsthm,secondhm,*eventSetup_,0,res);
+	    filler.addDoublets(pairCandidate, std::move(res));
+	  }
+	  std::vector<OrderedHitSeeds> tripletresult;                                
+	  CAHitTriplGenerator_->hitNtuplets(ihd,tripletresult,*eventSetup_,*seedingLayer);
+	  return !tripletresult.empty();
 	}
     }
     
@@ -203,16 +253,13 @@ bool SeedFinderSelector::pass(const std::vector<const FastTrackerRecHit *>& hits
 	const RecHitsSortedInPhi& firsthm = *layerCache.add(pairCandidate[0], std::make_unique<RecHitsSortedInPhi>(fHits, trackingRegion_->origin(), fLayer));
 	const RecHitsSortedInPhi& secondhm = *layerCache.add(pairCandidate[1], std::make_unique<RecHitsSortedInPhi>(sHits, trackingRegion_->origin(), sLayer));
 
-	// const RecHitsSortedInPhi firsthm(fHits, trackingRegion_->origin(), fLayer);
-	// const RecHitsSortedInPhi secondhm(sHits, trackingRegion_->origin(), sLayer);
 
 	HitDoublets res(firsthm,secondhm);
 	HitPairGeneratorFromLayerPair::doublets(*trackingRegion_,*fLayer,*sLayer,firsthm,secondhm,*eventSetup_,0,res);
 	filler.addDoublets(pairCandidate, std::move(res));
       }
+     
       std::vector<OrderedHitSeeds> quadrupletresult;
-      quadrupletresult.reserve(1);
-      quadrupletresult.clear();
       CAHitQuadGenerator_->hitNtuplets(ihd,quadrupletresult,*eventSetup_,*seedingLayer);
       std::cout<<"quadrupletresult.size()="<<quadrupletresult.size()<<std::endl;
       return !quadrupletresult.empty();  
