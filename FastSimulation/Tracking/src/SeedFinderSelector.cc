@@ -163,106 +163,109 @@ bool SeedFinderSelector::pass(const std::vector<const FastTrackerRecHit *>& hits
 	}
 	else if(CAHitTriplGenerator_)
 	{  
-	  if(!seedingLayer)
-	    throw cms::Exception("FastSimTracking") << "ERROR: SeedingLayers pointer not set";
+	  // 	  if(!seedingLayer)
+	  // 	    throw cms::Exception("FastSimTracking") << "ERROR: SeedingLayers pointer not set";
 
-	  SeedingLayerSetsHits & layers = *seedingLayer;
-	  IntermediateHitDoublets ihd(&layers);
-	  const TrackingRegion& tr_ = *trackingRegion_;
-	  auto filler = ihd.beginRegion(&tr_);
+	  // 	  SeedingLayerSetsHits & layers = *seedingLayer;
+	  // 	  IntermediateHitDoublets ihd(&layers);
+	  // 	  const TrackingRegion& tr_ = *trackingRegion_;
+	  // 	  auto filler = ihd.beginRegion(&tr_);
 
-	  std::array<SeedingLayerSetsBuilder::SeedingLayerId,2> hitPair;
-	  for(int i=0; i<2; i++){
-	    SeedingLayerSetsHits::SeedingLayerSet pairCandidate;
-	    hitPair[0] = Layer_tuple(hits[i]);
-	    hitPair[1] = Layer_tuple(hits[i+1]);
+	  // 	  std::array<SeedingLayerSetsBuilder::SeedingLayerId,2> hitPair;
+	  // 	  for(int i=0; i<2; i++){
+	  // 	    SeedingLayerSetsHits::SeedingLayerSet pairCandidate;
+	  // 	    hitPair[0] = Layer_tuple(hits[i]);
+	  // 	    hitPair[1] = Layer_tuple(hits[i+1]);
 
-	    bool found;
-	    for(SeedingLayerSetsHits::SeedingLayerSet ls : *seedingLayer){
-	      found = false;
-	      for(const auto p : layerPairs_){
-		pairCandidate = ls.slice(p,p+2);
-		if(hitPair[0] == seedingLayerIds[pairCandidate[0].index()] && hitPair[1] == seedingLayerIds[pairCandidate[1].index()]){
-		  found = true;
-		  break;
-		}
-	      }
-	      if(found)
-		break;
-	    }
-	    assert(found == true);
-	    const DetLayer * fLayer = measurementTracker_->geometricSearchTracker()->detLayer(hits[i]->det()->geographicalId());
-	    const DetLayer * sLayer = measurementTracker_->geometricSearchTracker()->detLayer(hits[i+1]->det()->geographicalId());
-	    std::vector<BaseTrackerRecHit const *> fHits{hits[i]};
-	    std::vector<BaseTrackerRecHit const *> sHits{hits[i+1]};
+	  // 	    bool found;
+	  // 	    for(SeedingLayerSetsHits::SeedingLayerSet ls : *seedingLayer){
+	  // 	      found = false;
+	  // 	      for(const auto p : layerPairs_){
+	  // 		pairCandidate = ls.slice(p,p+2);
+	  // 		if(hitPair[0] == seedingLayerIds[pairCandidate[0].index()] && hitPair[1] == seedingLayerIds[pairCandidate[1].index()]){
+	  // 		  found = true;
+	  // 		  break;
+	  // 		}
+	  // 	      }
+	  // 	      if(found)
+	  // 		break;
+	  // 	    }
+	  // 	    assert(found == true);
+	  // 	    const DetLayer * fLayer = measurementTracker_->geometricSearchTracker()->detLayer(hits[i]->det()->geographicalId());
+	  // 	    const DetLayer * sLayer = measurementTracker_->geometricSearchTracker()->detLayer(hits[i+1]->det()->geographicalId());
+	  // 	    std::vector<BaseTrackerRecHit const *> fHits{hits[i]};
+	  // 	    std::vector<BaseTrackerRecHit const *> sHits{hits[i+1]};
 	    
-	    auto& layerCache = filler.layerHitMapCache();
-	    const RecHitsSortedInPhi& firsthm = *layerCache.add(pairCandidate[0], std::make_unique<RecHitsSortedInPhi>(fHits, trackingRegion_->origin(),fLayer));
-	    const RecHitsSortedInPhi& secondhm = *layerCache.add(pairCandidate[1], std::make_unique<RecHitsSortedInPhi>(sHits, trackingRegion_->origin(),sLayer));
-	    HitDoublets res(firsthm,secondhm);
-	    HitPairGeneratorFromLayerPair::doublets(*trackingRegion_,*fLayer,*sLayer,firsthm,secondhm,*eventSetup_,0,res);
-	    filler.addDoublets(pairCandidate, std::move(res));
-	  }
-	  std::vector<OrderedHitSeeds> tripletresult;                                
-	  CAHitTriplGenerator_->hitNtuplets(ihd,tripletresult,*eventSetup_,*seedingLayer);
-	  return !tripletresult.empty();
+	  // 	    auto& layerCache = filler.layerHitMapCache();
+	  // 	    const RecHitsSortedInPhi& firsthm = *layerCache.add(pairCandidate[0], std::make_unique<RecHitsSortedInPhi>(fHits, trackingRegion_->origin(),fLayer));
+	  // 	    const RecHitsSortedInPhi& secondhm = *layerCache.add(pairCandidate[1], std::make_unique<RecHitsSortedInPhi>(sHits, trackingRegion_->origin(),sLayer));
+	  // 	    HitDoublets res(firsthm,secondhm);
+	  // 	    HitPairGeneratorFromLayerPair::doublets(*trackingRegion_,*fLayer,*sLayer,firsthm,secondhm,*eventSetup_,0,res);
+	  // 	    filler.addDoublets(pairCandidate, std::move(res));
+	  // 	  }
+	  // 	  std::vector<OrderedHitSeeds> tripletresult;                                
+	  // 	  CAHitTriplGenerator_->hitNtuplets(ihd,tripletresult,*eventSetup_,*seedingLayer);
+	  // 	  return !tripletresult.empty();
+	  // 	}
+	  return true;
 	}
     }
     
     if(CAHitQuadGenerator_)
     {
-      if(hits.size() < 4)
-	{
-	  throw cms::Exception("FastSimTracking") << "For the given configuration, SeedFinderSelector::pass requires at least 4 hits";
-	}
+      // if(hits.size() < 4)
+      // 	{
+      // 	  throw cms::Exception("FastSimTracking") << "For the given configuration, SeedFinderSelector::pass requires at least 4 hits";
+      // 	}
 
-      if(!seedingLayer)
-	throw cms::Exception("FastSimTracking") << "ERROR: SeedingLayers pointer not set";      
+      // if(!seedingLayer)
+      // 	throw cms::Exception("FastSimTracking") << "ERROR: SeedingLayers pointer not set";      
 
-      SeedingLayerSetsHits & layers = *seedingLayer;
-      IntermediateHitDoublets ihd(&layers);
-      const TrackingRegion& tr_ = *trackingRegion_;
-      auto filler = ihd.beginRegion(&tr_);
+      // SeedingLayerSetsHits & layers = *seedingLayer;
+      // IntermediateHitDoublets ihd(&layers);
+      // const TrackingRegion& tr_ = *trackingRegion_;
+      // auto filler = ihd.beginRegion(&tr_);
       
-      std::array<SeedingLayerSetsBuilder::SeedingLayerId,2> hitPair;
-      for(int i=0; i<3; i++){
-	SeedingLayerSetsHits::SeedingLayerSet pairCandidate;
-	hitPair[0] = Layer_tuple(hits[i]);
- 	hitPair[1] = Layer_tuple(hits[i+1]);
+      // std::array<SeedingLayerSetsBuilder::SeedingLayerId,2> hitPair;
+      // for(int i=0; i<3; i++){
+      // 	SeedingLayerSetsHits::SeedingLayerSet pairCandidate;
+      // 	hitPair[0] = Layer_tuple(hits[i]);
+      // 	hitPair[1] = Layer_tuple(hits[i+1]);
        
-	bool found;
-        for(SeedingLayerSetsHits::SeedingLayerSet ls : *seedingLayer){
-	  found = false;
-	  for(const auto p : layerPairs_){
-	    pairCandidate = ls.slice(p,p+2);
-	    if(hitPair[0] == seedingLayerIds[pairCandidate[0].index()] && hitPair[1] == seedingLayerIds[pairCandidate[1].index()]){
-	      found = true;
-	      break;
-	    }
-	  }
-	  if(found)
-	    break;
-	}
-	assert(found == true);
-	const DetLayer * fLayer = measurementTracker_->geometricSearchTracker()->detLayer(hits[i]->det()->geographicalId());
-	const DetLayer * sLayer = measurementTracker_->geometricSearchTracker()->detLayer(hits[i+1]->det()->geographicalId());
-	std::vector<BaseTrackerRecHit const *> fHits{hits[i]};
-	std::vector<BaseTrackerRecHit const *> sHits{hits[i+1]};
+      // 	bool found;
+      //   for(SeedingLayerSetsHits::SeedingLayerSet ls : *seedingLayer){
+      // 	  found = false;
+      // 	  for(const auto p : layerPairs_){
+      // 	    pairCandidate = ls.slice(p,p+2);
+      // 	    if(hitPair[0] == seedingLayerIds[pairCandidate[0].index()] && hitPair[1] == seedingLayerIds[pairCandidate[1].index()]){
+      // 	      found = true;
+      // 	      break;
+      // 	    }
+      // 	  }
+      // 	  if(found)
+      // 	    break;
+      // 	}
+      // 	assert(found == true);
+      // 	const DetLayer * fLayer = measurementTracker_->geometricSearchTracker()->detLayer(hits[i]->det()->geographicalId());
+      // 	const DetLayer * sLayer = measurementTracker_->geometricSearchTracker()->detLayer(hits[i+1]->det()->geographicalId());
+      // 	std::vector<BaseTrackerRecHit const *> fHits{hits[i]};
+      // 	std::vector<BaseTrackerRecHit const *> sHits{hits[i+1]};
 
-	auto& layerCache = filler.layerHitMapCache();
-	const RecHitsSortedInPhi& firsthm = *layerCache.add(pairCandidate[0], std::make_unique<RecHitsSortedInPhi>(fHits, trackingRegion_->origin(), fLayer));
-	const RecHitsSortedInPhi& secondhm = *layerCache.add(pairCandidate[1], std::make_unique<RecHitsSortedInPhi>(sHits, trackingRegion_->origin(), sLayer));
+      // 	auto& layerCache = filler.layerHitMapCache();
+      // 	const RecHitsSortedInPhi& firsthm = *layerCache.add(pairCandidate[0], std::make_unique<RecHitsSortedInPhi>(fHits, trackingRegion_->origin(), fLayer));
+      // 	const RecHitsSortedInPhi& secondhm = *layerCache.add(pairCandidate[1], std::make_unique<RecHitsSortedInPhi>(sHits, trackingRegion_->origin(), sLayer));
 
 
-	HitDoublets res(firsthm,secondhm);
-	HitPairGeneratorFromLayerPair::doublets(*trackingRegion_,*fLayer,*sLayer,firsthm,secondhm,*eventSetup_,0,res);
-	filler.addDoublets(pairCandidate, std::move(res));
-      }
+      // 	HitDoublets res(firsthm,secondhm);
+      // 	HitPairGeneratorFromLayerPair::doublets(*trackingRegion_,*fLayer,*sLayer,firsthm,secondhm,*eventSetup_,0,res);
+      // 	filler.addDoublets(pairCandidate, std::move(res));
+      // }
      
-      std::vector<OrderedHitSeeds> quadrupletresult;
-      CAHitQuadGenerator_->hitNtuplets(ihd,quadrupletresult,*eventSetup_,*seedingLayer);
-      std::cout<<"quadrupletresult.size()="<<quadrupletresult.size()<<std::endl;
-      return !quadrupletresult.empty();  
+      // std::vector<OrderedHitSeeds> quadrupletresult;
+      // CAHitQuadGenerator_->hitNtuplets(ihd,quadrupletresult,*eventSetup_,*seedingLayer);
+      // std::cout<<"quadrupletresult.size()="<<quadrupletresult.size()<<std::endl;
+      // return !quadrupletresult.empty();  
+      return true;
     }    
 
     return true;
