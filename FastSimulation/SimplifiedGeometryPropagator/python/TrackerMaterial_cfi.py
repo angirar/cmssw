@@ -1,5 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 from Configuration.Eras.Modifier_phase1Pixel_cff import phase1Pixel #to configure phase1 geoemtry
+from Configuration.Eras.Modifier_phase2_tracker_cff import phase2_tracker
 
 # Do not change the order of the interaction models unless you know what you are doing.
 # Not used at the moment: "muonBremsstrahlung", "nuclearInteractionFTF"
